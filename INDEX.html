@@ -1,0 +1,1487 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ເກັບຄ່າຂີ້ເຫຍື້ອ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+Lao:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: dark-teal header band with tabs; each tab = toolbar row, summary strip, then a working table. Amber marks money still owed. */
+:root {
+  --bg: #F2F5F2; --surface: #FFFFFF; --sunk: #E8F0E6; --line: #D3DDD3;
+  --fg: #102233; --muted: #4A5866;
+  --brand: #2B7A2E; --brand-ink: #FFFFFF; --band: #0E3550; --band-fg: #F2F6F9; --band-muted: #B7C8D6; --orange: #E8820E;
+  --owe: #A4520A; --owe-bg: #FDEFD9; --ok: #14532D; --ok-bg: #DCF2E4; --bad: #9F1239; --bad-bg: #FCE8EC; --off: #3E4A45; --off-bg: #E6EAE8;
+  --font: "Noto Sans Lao", "Phetsarath OT", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0C1714; --surface: #13211D; --sunk: #192B26; --line: #283D37; --fg: #E5EEEA; --muted: #A5BAB2;
+  --brand: #5DB861; --brand-ink: #06170A; --band: #081F30; --band-fg: #F2F6F9; --band-muted: #A9BCCB; --orange: #F29A3A;
+  --owe: #F2B266; --owe-bg: #3A2A12; --ok: #9BE0B2; --ok-bg: #173A26; --bad: #F6A3B4; --bad-bg: #3D1820; --off: #C2CCC8; --off-bg: #25312D; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0C1714; --surface: #13211D; --sunk: #192B26; --line: #283D37; --fg: #E5EEEA; --muted: #A5BAB2;
+  --brand: #5DB861; --brand-ink: #06170A; --band: #081F30; --band-fg: #F2F6F9; --band-muted: #A9BCCB; --orange: #F29A3A;
+  --owe: #F2B266; --owe-bg: #3A2A12; --ok: #9BE0B2; --ok-bg: #173A26; --bad: #F6A3B4; --bad-bg: #3D1820; --off: #C2CCC8; --off-bg: #25312D; color-scheme: dark }
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.5 }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--band) }
+button, input, select, textarea { font: inherit; color: inherit }
+:focus-visible { outline: 3px solid var(--owe); outline-offset: 2px }
+.wrap { max-width: 1200px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.num { font-variant-numeric: tabular-nums } .mono { font-family: var(--mono); font-size: 13px }
+.small { font-size: 12px; color: var(--muted) }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0) }
+
+header.band { background: var(--band); color: var(--band-fg); border-bottom: 4px solid var(--brand); box-shadow: 0 3px 0 var(--orange) }
+header.band .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-block: 12px }
+.brand { display: flex; align-items: center; gap: 12px; flex: 1 1 240px; min-width: 0 }
+.mark { width: 48px; height: 46px; border-radius: 10px; background: #FFFFFF; object-fit: contain; flex: none; padding: 2px }
+.brand b { display: block; font-size: 17px; line-height: 1.25 }
+.brand span { font-size: 12px; color: var(--band-muted) }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; background: rgba(255,255,255,.08); padding: 4px; border-radius: 10px }
+.tabs button { border: 0; background: transparent; color: var(--band-fg); min-height: 40px; padding: 0 14px; border-radius: 7px; cursor: pointer; font-weight: 600 }
+.tabs button[aria-selected="true"] { background: var(--band-fg); color: var(--band) }
+.who { display: flex; align-items: center; gap: 8px }
+.who span { font-size: 13px; color: var(--band-muted) }
+.ghostbtn { border: 1px solid rgba(255,255,255,.35); background: transparent; color: var(--band-fg); min-height: 40px; padding: 0 12px; border-radius: 8px; cursor: pointer; font-weight: 600 }
+
+main.wrap { padding-block: 20px 56px; display: flex; flex-direction: column; gap: 16px }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: space-between }
+.toolbar .grp { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end }
+h1 { font-size: 24px; margin: 0; line-height: 1.3; text-wrap: balance }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0 }
+.field label, .lbl { font-size: 12px; font-weight: 600; color: var(--muted) }
+input, select, textarea { min-height: 44px; padding: 0 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); font-size: 15px; width: 100% }
+textarea { padding: 10px 12px; min-height: 64px; resize: vertical }
+.toolbar input, .toolbar select { width: auto; min-width: 150px }
+.btn { min-height: 44px; padding: 0 16px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 600; white-space: nowrap }
+.btn.primary { background: var(--brand); color: var(--brand-ink); border-color: var(--brand) }
+.btn.warn { color: var(--bad) }
+.btn.sm { min-height: 36px; padding: 0 12px; font-size: 14px }
+.chips { display: flex; flex-wrap: wrap; gap: 6px }
+.chips button { min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer; font-weight: 600; font-size: 14px }
+.chips button[aria-pressed="true"] { border-color: var(--brand); background: var(--sunk) }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden }
+.tiles > div { background: var(--surface); padding: 12px 16px; display: flex; flex-direction: column; gap: 2px }
+.tiles .k { font-size: 12px; font-weight: 600; color: var(--muted) }
+.tiles .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.3 }
+.tiles .v.owe { color: var(--owe) } .tiles .v.ok { color: var(--brand) }
+.meter { height: 8px; border-radius: 4px; background: var(--sunk); overflow: hidden; margin-top: 6px }
+.meter span { display: block; height: 100%; background: var(--brand) }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0 }
+.panel > h2 { font-size: 16px; margin: 0; padding: 12px 16px; border-bottom: 1px solid var(--line) }
+.tablebox { overflow-x: auto }
+table { width: 100%; border-collapse: collapse; font-size: 14px }
+th { text-align: left; font-size: 12px; font-weight: 600; color: var(--muted); padding: 10px 12px; background: var(--sunk); white-space: nowrap }
+td { padding: 10px 12px; border-top: 1px solid var(--line); vertical-align: middle }
+th.r, td.r { text-align: right }
+tr.off td { color: var(--muted) }
+.chip { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap }
+.chip.paid { background: var(--ok-bg); color: var(--ok) } .chip.owe { background: var(--owe-bg); color: var(--owe) } .chip.off { background: var(--off-bg); color: var(--off) } .chip.ex { background: var(--sunk); color: var(--muted) }
+.rowact { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap }
+.empty { padding: 40px 16px; text-align: center; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 12px }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px }
+.status { font-size: 13px; color: var(--muted) }
+.notice { padding: 10px 14px; border-radius: 10px; background: var(--owe-bg); color: var(--owe); font-size: 14px }
+
+dialog { border: 0; border-radius: 14px; padding: 0; width: min(720px, calc(100vw - 24px)); background: var(--surface); color: var(--fg); box-shadow: 0 20px 60px rgba(0,0,0,.3) }
+dialog::backdrop { background: rgba(4,20,15,.55) }
+dialog form { display: flex; flex-direction: column; max-height: calc(100vh - 40px) }
+.dlg-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 18px; background: var(--band); color: var(--band-fg); border-radius: 14px 14px 0 0 }
+.dlg-h h2 { margin: 0; font-size: 18px }
+.dlg-h .x { width: 44px; height: 44px; border-radius: 9px; border: 1px solid rgba(255,255,255,.35); background: transparent; color: inherit; cursor: pointer; font-size: 18px }
+.dlg-b { padding: 18px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px }
+.dlg-f { padding: 12px 18px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center }
+.fgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px }
+.fgrid .wide { grid-column: 1 / -1 }
+.err { color: var(--bad); font-size: 13px; margin: 0 }
+.months { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px }
+.months label { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; border: 1.5px solid var(--line); border-radius: 9px; cursor: pointer; font-size: 14px }
+.months label.done { background: var(--ok-bg); color: var(--ok); border-color: transparent; cursor: default }
+.months input { width: 20px; min-height: 20px; height: 20px; accent-color: var(--brand) }
+.total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 14px; border-radius: 10px; background: var(--sunk); font-weight: 700 }
+.total .num { font-size: 24px }
+.receipt { border: 1px dashed var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 6px; font-size: 14px }
+.receipt .rh { text-align: center; font-weight: 700; font-size: 16px }
+.receipt .row { display: flex; justify-content: space-between; gap: 12px }
+
+.infobar { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px }
+.infobox { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; display: flex; flex-direction: column; min-width: 0 }
+.infobox .k { font-size: 12px; font-weight: 600; color: var(--muted) }
+.infobox .v { font-size: 16px; font-weight: 700; overflow-wrap: anywhere }
+.paygrid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 16px; align-items: start }
+@media (max-width: 920px) { .paygrid { grid-template-columns: minmax(0, 1fr) } .paygrid .entry { order: -1 } }
+.ph { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--line) }
+.ph h2 { font-size: 16px; margin: 0 }
+.yearsel { width: auto; min-height: 40px }
+table.grid th { color: #FFFFFF; background: var(--band) }
+table.grid th:nth-child(odd) { background: var(--brand) }
+table.grid td { padding: 6px 8px }
+table.grid input, table.grid select { min-height: 40px; padding: 0 8px; font-size: 14px }
+.payfoot { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; padding: 12px 16px; border-top: 1px solid var(--line) }
+.bigtotal { margin-left: auto; display: flex; align-items: center; gap: 14px; background: #0B3A12; color: #FFFFFF; border-radius: 10px; padding: 8px 16px }
+.bigtotal span { font-size: 13px; color: #CFE6D2 }
+.bigtotal strong { font-size: 32px; line-height: 1.1; min-width: 6ch; text-align: right }
+.payact { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; padding: 0 16px 16px }
+.btn.big { min-height: 52px; padding: 0 28px; font-size: 17px }
+.btn:disabled { opacity: .5; cursor: not-allowed }
+.dropzone { border: 2px dashed var(--line); border-radius: 12px; padding: 28px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center }
+.dropzone.over { border-color: var(--brand); background: var(--sunk) }
+.cols { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center }
+.cols span { font-size: 12px; padding: 3px 8px; border-radius: 6px; background: var(--sunk) }
+.warnlist { margin: 0; padding-left: 20px; font-size: 13px; color: var(--owe) }
+.invprev { width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; background: #FFFFFF }
+.badge { display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 999px; background: var(--orange); color: #FFFFFF; font-size: 12px; line-height: 20px; text-align: center; margin-left: 4px }
+.req { background: var(--surface); border: 1px solid var(--line); border-left-width: 1px; border-radius: 12px; display: flex; flex-direction: column }
+.req .rh2 { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between; align-items: baseline; padding: 12px 16px; border-bottom: 1px solid var(--line) }
+.req .rh2 strong { font-size: 16px }
+.req .ra { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: center; padding: 10px 16px; border-top: 1px solid var(--line) }
+.steps { display: flex; gap: 6px; align-items: center; font-size: 13px }
+.steps i { width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-style: normal; font-size: 12px; font-weight: 700; background: var(--sunk); color: var(--muted); border: 1.5px solid var(--line) }
+.steps i.on { background: var(--brand); color: var(--brand-ink); border-color: var(--brand) }
+del { color: var(--bad); text-decoration: line-through } ins { color: var(--ok); text-decoration: none; font-weight: 600 }
+.slipbox { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1 1 260px }
+.slipbox img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); cursor: zoom-in }
+.slipbox .need { color: var(--owe); font-size: 12px; font-weight: 600 }
+.slipview { max-width: 100%; max-height: 70vh; object-fit: contain; display: block; margin: 0 auto; border-radius: 8px; background: #FFFFFF }
+.invprev.thermal { width: auto; max-width: min(340px, 100%); display: block; margin: 0 auto; box-shadow: 0 4px 16px rgba(0,0,0,.12) }
+.login { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--band); padding-block: 32px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.login-card { width: min(420px, 100%); background: var(--surface); border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35) }
+.login-card .mark { width: 120px; height: 110px; border-radius: 0; padding: 0 }
+.wordmark { width: 220px; max-width: 100%; height: auto; border-radius: 8px; background: #FFFFFF; padding: 4px 8px }
+.login-card h1 { font-size: 20px; margin-top: 6px }
+.login-card form { width: 100%; display: flex; flex-direction: column; gap: 12px; text-align: left }
+.pin { letter-spacing: .35em; font-size: 20px; font-family: var(--mono) }
+.linkbtn { background: none; border: 0; color: var(--brand); text-decoration: underline; cursor: pointer; min-height: 44px; font-weight: 600 }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--band); color: var(--band-fg); padding: 10px 16px; border-radius: 10px; font-weight: 600; z-index: 20 }
+@media (max-width: 560px) { h1 { font-size: 20px } .toolbar input, .toolbar select { min-width: 0; width: 100% } .toolbar .grp, .toolbar .grp > * { width: 100% } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="truck" viewBox="0 0 24 24"><path d="M3 6h11v10H3zM14 9h4l3 3.5V16h-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><circle cx="7" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.8"></circle><circle cx="17" cy="17.5" r="1.8" fill="none" stroke="currentColor" stroke-width="1.8"></circle><path d="M6 9.5h5M6 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></symbol></svg>
+
+<section id="login" class="login" aria-labelledby="loginTitle">
+  <div class="login-card">
+    <img class="mark" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwQDAwQEBAQFBQQFBwsHBwYGBw4KCggLEA4RERAOEA8SFBoWEhMYEw8QFh8XGBsbHR0dERYgIh8cIhocHRz/2wBDAQUFBQcGBw0HBw0cEhASHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBwcHBz/wAARCAClALQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD7t70p6UmaUcipKG5NOzSGg/SgQtFFHWgYfjSkCkpOlMBaXbSdxTZZY4Y2kldUjQFmZjgAetIQ/HNLivC/G/7TOgeH5ZbPQojq92mR5obbAp/3urfhx7143rP7QnjjW5GEWoR6dC3RLOMLgf7zZNeVic6wtB2vd+R59bM6FLS92fawHuaUj0r4Gk+Ifiu4IMviPVGYd/tDD+VJF8QvFMLZHiLVMf8AX0/+Nea+J6N/4bOb+2qf8p99Y55or5H+Glj4t+J+rmKTxFq0ek22DdzC5bOD0RT/AHj+gr6u0/ToNI0+3srZSsEChVBYsfxJ5Jr2MvxrxkPaqHKvPqd+ExLxKcuWyLBpBThRXoHWFHTvRSc0gEpe1JS0AAopaKAG0Uc0vWgBQRS4FIBiuU8d/EbQPh1pq3uuXfleYdsUCDdLM3oq/wBelaQpyqSUYK7M6lWFKLnN2SOrozivmC5/bBgFyRa+FJmtc/elugrkeuAMCvT/AIafHTw38SZvsNuZLHVwpb7FckZcDqUYcNj86662W4mjHnqQsjio5thK8/Z056nqFH0p3GOlNzjtXDY9EGIQEkgAckmviv49/Gy98W6vc+HtBuHj8P2rFJXjODeODgkkfwDsO/Wvoz47+LJvCHwx1m8t22Xc6i1hb0aQ7c/gM18b/C74Y6v8Rr+T7MPsmlWvN1qM4xHEO4H95sdvzrxM2rVZNYeju9z5/OcRVc44Sju9WcnaW891LHFbwyzXEhwsUalmY+wFen6b8INbs7BNT8TXdn4c01hkNfv++b2WMck+1dTrXxN8KfCqB9H+Hdpb3eqj5Z9cuVEh3dDs9f8A0Ee9eKat4i1LxNqD3usahcX1yTnzJnJ2+w7Aewr52rRoUF7/AL0u3Q8iXsaSs3zS7dDptZTRbYiHSJby7webq4AjDf7sY5A+prGDcgYzmqcchKgIce9emfBnwa3jbxlZQlC1jZsLi6bHG0HKr+Jx+teZCjKvWUILd9DKkvbVVTS3Pqr4S+EE8IeCdNtdgW8mQXFye5kYZ/QYFdyeRSeVs6cCmtKigl3VR6k4r9Ko04UaagtEj7mjT5IKERwHFFUzq9grbWvbcN6eYKnjuYJv9XNG/wDusDTVam3ZSX3mrpyW6JsUEelGeCew715f4s+M9lot3JZaXbfbriIkPIW2xqfTPf8ACufGY+hgoe0rysjowmCr4yfs6EeZnqHtSV4fp/x2u1lH27SYWhJ5MEhDKPoeteteHvEmn+J9OW90+YSRHhlPDIfQjsa58vznB49uNCeq6PQ3x2U4rApOvCyfXoa1FJmivUPOEoopRTAcCB16V+dXxa8ZXHj3x7q2o3EjGC3me1tY8/LHEhI4HuQSfrX6KEBhg9+tfm98QvC914P8ba7pV3Gysly8sRI4eN2LKw9sH9K+k4bjTdaTlvbQ+X4nlNUYqO19TlyCTwau6ZeXOk31rqFnM0N7aSCaGVDgqwORVPcDwDmhFnuJooLeJ5Z5WEcaIMlmJwAPxr7CpyNNT2PiYc/MuXc/Q3wz8VvDeq+GtF1LUNc0yyur63SR4ZrlEZXx8wwTnrmux03VtN1aETWF7b3cX96CUOP0r82vG+hW/hzxJLo8aAzWcUUV0c7h9o2AyYPoCcfhVTRNY1Lw1dLe6RqNzY3CHIe3kK/mOhHsa+Vlw/GpF1KU9/I+sp8STpNQqw2Pu/42+C7nx94f0nSoJUgtl1GOa8ncgCKBVbc3Pevlj4qfGKzuLP8A4QvwR/oPg6x/dM8PDXrDqzHqVJ/PqfSvW/iJ4u8UeIfAXgjwXDIn/CWeMIVa7kiXZstzyWI7ZHX6NXYeHv2WvAGkaVHbX2mHUrsoPNup5GyzdyoBAUV8JjcNUqVZQpWvs3/kejiYTxsmsNpe12/Tb/M+F4m3g8qBipkBxhea+3rn9lX4eSOGhttQtx/diu2x+oNa2ifs6eANGkST+yXu3TobudpAfw6V4n9h13LVqx5ceHsRde8l+J8heAvAHiPx1fpb6NZM8AP7y6kBEMQ9Wb19hzX3L8Ofh/pnw70JdPsv3lzJhrm5YYaZ/wCgHQCumsbG1022S2s7aK3t4+FiiQKo/AVPjmvZwOV08I+davufRYHLYYb3t5f1sPZjjGM1wniv4dQ+IWknhvryC5bnBlZoz7be34V3WOlVre7S787y85ikMTfUV04vDUsVTdGsrpns0K9ShL2lJ6nzH4r8M3XhQpHqEMYaUkRyLyHx1rm4Lq4t5VktrieFh/FHIV/lX1N4t8HWHjGwFrep86EmKVfvRse4r5x8T+Fb3wdqJs70BkbLQzKPlkX/AB9RX5dneRVcrm6tBt031vqvU/RcizejjoewrW5/Tc2bf4leJo9E1G0a5+0xmHb578SRAnaMEdeveuBSXaAAK6Xw1bNrkGtaXDj7Xc2weAH+J423Y/EZrnI4zyGBBU4II5Bry8VVr1qNOVabktd+mp7WApYelWqwoxUXpt1ViQOSPwrvfg9rEun+MILRSfI1BTG6Z43AEg/Xgj8a4NcDORXonwe0KTUPFa6gFP2bT1LFx0LkYA/Ik1rkXtPr9L2W9193Uyzx01gKvtdmn9/Q+iBRSUV+0an48LS496TvS1QwPGDivnz4jan8L/ivrlz4a1LVksNd00+VBqfCoW/iQOeGAPUH8K6/4/fERvAPgaf7JKF1fUz9ltcHlCR8z/gP1Ir4LILA7iWzyc9z619Dk+Wyrp17uNtrfmfL57msaMlh1FS73PfJP2Udd87dZ+JtEnsjys7blOPXAyP1qaSy8D/AqKS9TU4fE/jlUK2qRYMFox/jIBIGPc5+leBrcTrH5azTCM/wiQgflmozGACQoGea+h+pV5+7Xq3j2Stc+ZeNoQfNRp2l3bvb0DUL2W9urm8upWlubiRppZG6szHJNe7/AAc/ZzvfGEEOt+KBLZaNIA0NoPlmuV9T/dU/maT9nT4NReMdQPiXWofM0Wwl2wRMPluZR1z/ALK/qfpX2hGojUKoAUdBjivKzfNnT/2ehpbd/oe1k2TLEL6xiFdPbzPGfCXh8ap8dPF2syxAW2gWdrpVip6JlNzEfgQPxr2fcRxVGy0ax0671C7tYBHcajIJrlwT+8cKFBP4ACrpFfIxja77n1tCkqSa7sXOaXpSAUtUbiEUAUppR1pbAhD0rkPAGpDUE15ic7NRlH8q6DXNRTS9Iv71sYt4Wfk4zgdK8o+Cupu19qtjIRmcC5Bz1PQ/0rxMbj1RzChh2/iv/wAA9DD4WU8LVqraNj2YtXP+LfClr4v0maxulw5+aKUfejfsQa6EqOKOFNevWowrQdOorp9DipVJ0pKcHZo+STZX3hPXNjEwahYS5B7H0P0Irt508I+O2NzPdDQtacDzh/yylb+8M8fyrpfjT4aFzYJrlrH++tflnx1aM9D+BrxNIi33ufWvyTHQnk+JnhpxU6b1Sf5+q2P0nC1I5rQhiYScKkdG1/WqPQ1+F+hWLibU/Flu1sOSsOFLD65NeoeAtW8OXFjPp/h9DFFZsAysuC+f4/U59a+c12r0HPrW54P12Tw54js77cfJ3COdR/FG3+Bwa3yniClhsTFQoqMW7N6t/eznzTKa+IoSdWs5yWqWy+4+nqKQOHVWQ5VgCKK/WFZq5+e8vmPHNLikFR3dwttbTTt92KNnOfYZoSbehDaSuz4c/aZ8XN4j+Jk2nxSE2miRi1UDp5h+Zz/IfhXkA/SrGr6hJrOs6nqUrbpLy5kmZvXcxP8AKq2K/TcHRVChGmuiPynHVnXryqPqxdwrR0LRbnxJrmn6PZAm6vplhTAzjJ5P4DJ/Cs3pXvP7KfhxNV8eXerSpuj0i1JQ+kkh2j9A1RjcR7ChKr2QYLD/AFivCkurPrjwr4ds/Cfh7T9FsIwlrZRLEuP4sDkn3JyfxrYNIPalwT1Ffm8pOUm31P1SEFCKjHZBSYp22ggVNrliDpRS4xSE0wFxxmko7Clx70gPPPi/qqWfho2QYeffuqBc4O0EEn37V5X4E1iPRPFmnTy52SEwMc4A38A/nWp8XdeW/wDFf2REIXTk8ssTnczYJx6V5/K24ggn5SCPWvyLPszlLN1Wg9KbVvlufeZXgksudOW87v8AyPsFTu5paxvCurLrug2OoIhQTpnaTkgjj+lbPSv1mhVjWpRqR2aufDTi6cnF7or39jFqNpPbTIGjmQoR7GvlPUtOfSdQu7F/v28rRn8Dx+lfWgbHSvAfivoc1j4lk1HyWFneKv70DgSAYIPp0FfGcbYJ1cNHERV3F/gfS8LYv2eIlRk7KS/E8/2HFO28Yp5AOR3oCmvyy5982rH0T8PdaGqeE7CSVv30S+S5Pcrx/LFFeQ+F/FEuiWEtshwpmLgfUD/Civ0/A8RNYampPWyPz3F5Q/bz5drs+je9c58QLprDwN4juUPzxWEzD/vg10PNcz8SLdrvwB4lhX7z6fOP/HDX39D+JFeZ8riP4Un5M/NqBvkUD0q5DaTzxXU8UTPFaxiSZh0RSwUE/iQKz4wyxg47V9C/Db4fNqX7P/jnVzCz3uoD9wQOfLgYNx9WDfkK/R8Vilh4KT6tL7z8xw2FeIqOMeib+4+f2kIzwa+tP2OrHPh/xNfFfmlvI4c+yx5/9mr5UiVJF3etfXv7I0saeDfEKFlHl6juOTjAMac/pXn57dYNtd0d3D7i8dFNdz6HxigOM45rzzxF8Z/DOhXQsbe4Oramz+WLaww+xsEnfJ91AACTk8AZryrXvif4i195otWtZtK0RsELp0uflIZlFy+N6qwXd8gBCnJNfGU8NOerVj76eIhHqeqeOfixZ6CLnT9DhGsa8g2+TEwEMDFSQZZOg4BOBk4H415b8FfjtqTeGrU+NRJNbSSzLHrMfzhNrDKzKOVA3DDdMdcYqxpOl2pSO3077NPYSvKkc1qNqTbV3XM3H8PyrCvfGfU1518I2nv/AAppKW0SCR2lT5h8pn82UJkdwwIQj0Nd1KhT9k1JdTgqVajqxd+j0+4+zrW8t763juLeZJoJVDJJGwZWB7gjrUxGfWvlHTfEl74OvBb+CWMl1cGJl0x2Js0eR8NDNn/VyJzgoeQORxXrPhb476LqFtFH4hjOh3hUbmmYPbMTxxKOAM/3sVyVMLKKvHVHbSxUZ6M9TL7etcB8T/GV/wCF7GxGmmIT3UjKWkTdtUDOQKwvif431C0vLG30LUFSJ4vOeWHawYE/LzyMcGvJ7m7vb2Tzb24nnbJbMjFhk9celfnnEPE8cOqmDopqa0v2PrspyV1lHEVLOPYbe3c2qXk97dSiS5nbfI2MZNQLApYEsKl3W0dtd3VzOttZ2cLXFxcOMrFGvU47nsB3JqPTr2y1fSbDWNKu/tel3yM0MxjMbZU7WVlPRge1fnTw2JqUZYtxbjezfmfVLE0IVVhovW2i8j0TwD45v9Hu7DSmKT6fNKsSqww0WfQ9+T3r3lmVicGvkRpnDK0blJEO5WU4IPrXYeCviHfaHqEh1a6u7uweMjYTvKtkYIyfrX1vDfEv1WKw2Lba6Psjwc4yj2svb0FZ9V3PovbnpXi/xP8Aifp3hP4meGvB/iFIz4f8TWckZlbrb3Ak2oxP905x7HFetWF2mo2Vvd27FoZ0EiEjGQRnpXwf+3dcvc/EPw1aqSr2ullyQeQWkJH8q/TJKFWFpaxf5HxWIrSw651o0z17xZoE3hfWpbGTLRH5oZf76f4joay15Fbvw918/GD4E6dq07CTXtB/0a5b+JjGAC3/AAJMN9c1irFjBz1r8W4kytZbi3CPwy1X+XyP0/Isy+v4VTe63IXdo2wB15oq5HaeeC23ODjrRXNQhN000VXSdSTufVHeob+1F9p13asAVnieMg+6kVP0pR061+7xlaSZ+YyipRce5+XOoRNpd1eWcylZLWV4mB7FWI/pX2R8PPFNn4V0P4VeF7oBLPxJptx5gPQy4DD89xH418+/tHeE38OfE7VmVNtrqo+2wkDj5uHH4MD+Yrpvi0X/AOEE+D2p2spjkgsC0cq9UddhGPxFe9xLjnHAU8QvJnwuBX1OrWdtY/ldHnfxF8MSeBvGWr6HJGUit5i1uT0eFuUI/Dj8KXwJp/jDxPPfaN4TaOZzF9pltJp9iPt+XcASAxGehzXunjPRov2gPhpaeKNIRP8AhL9GTy7q2T70uBlkx7/eX8RXh/wk8US+B/iFpGrFf3aSG3uFb5co/wApB9MHH0xXrYPMP7QwHPT1klt6HLPDxwuLjNO0JO6fkyjZav8AEG71+Twvp+nQNrPmPbtYR2qKUIYF14wAMLgn0J55r2eH4Z/H3ymlM/h1LiU3EjszjfvmXYzHjGVT5V7AV1/gD4R+LdO+OV5481a2sINNvXnl8uG5EjJ5i4UdBmvpMgSGvFxuPjzRVJJ6a+p9TgsFOUZOrJ76eh8O+IPDnxw+Genah4hxpaWAiRLtdPCOqoqld3lkcD5iSV781yfwbtfil4o02XS/BotV0zTZfNee4VECSMdw+YjJOeQO1fdPxA0O78QeCdf0iwEf2y+s5IIvMbC7mXAyfSvNf2bvhf4g+Feha3Y68bMzXtyksZtpC42hMHOQOc1MMevYSbS5riqYCXt4xUnyvc8jX4O/HOzshbwSaD5SxLGi71yNoYbgcfeO9st1Oa8j8T678UPBvieDQdXt4YdWcotvEltG6zZARSpHDD+tfpE+5hzXgvxb+DPiDx38SfDXinTruxgstBRHKS7mkkZZN5AUD2x1qaGPvJqolaxpicvdOF6TbPnHUPDPxP8ADc4m1DUdD0CXYA8DalDDu/2mhGefoKv2/wARW0eNBqniHS9bYY3x2WmyKT7ebuQfjg1X8U/DjQ7PW72bxF4x1C21K4leVzcaLLuYkk9S3I/wrBTwd4HEhD+O7wL6ror/APxdePjsuxGYJt4SLXflV/vPMjnGKwcnCjPl9Zfoa/jb4q6L4h8H6zomlaRqNlc6oiRPNcXCSIkYcMRgAHnAqh8OvidpXg/wfb+H9WsNQuTb3M00U9pKgG2TaSCrd8j1pYfDvw0sZC1xrPiTVlXolraJbA/i5Ndp4L8a+DtJ1SK30T4dRsdrAXsqtf3atj5W2cDrzXLS4VxU8M8NKko092hwz7GSxKxE8Qufvv8AkjtfB1pa+Orb7Tpcer2SlS27VbEww8ek2dpp90+h6SGTU/FmiW8y8GOKRrhv/HARXOeK/Dmt+IYPtnif4jWtrATuFlqqNalf92BSeK8l1WDTdOnWHTtZi1IZIZ4rd4kH0LdfyrTDeGuT15J1JO/ZXseniuPM0w8eWMU/N2/JH1Npfx60jRNPtrCHxHo80FugjVpLS4Q4HAyQDXxl+0b47l8afFnWLwmJktVjs0aEtsYIOSN3P3ia6iy8q2hu9WuF3WOlx+fL/tN0jT6s+B9M14dcu9zcS3E7b55nMjse7E5NepmGV4bLXGjh5N+rvZHk0M4xGYQcsRFJX6dT6n/YW8TMPEvirwzO5MGpWa3KRn+8h2sf++WFekXcD2eoXdqRj7PK0fPscV4X+xxKYPjlpip0lsbpG+m1T/SvojxaC3i3VYoE3SPdEKB3Jr8y46oqVGjUSu7tfgfpnA1a6qJ7W/U7f4feFI9T0A3cyE+ZO+0/7IwP5g0V6T4d05dE0SxsUH+pjAJA6nv+tFezgcgoRw1OM1rZXMsTmlWdaUovS7NYUp/SkAozX05454j+038PH8XeBhq1lEH1PRCZwFGWkhI/eKP/AEL8K8S1F/8AhKf2ZdAvo/mk8N6g9tKQOVRsgH8mWvtpkWRSrqGUjBU9CK8Gtvhnb+GNY8W+DCpHhfxlA8+n5Hy210oJaP27MvsuO1dFeSxGAnhJbrVf5Hh47AKdV1IrSaaf6M+Zvht8SdR+GfiFNTsW3wPiO6tGOFnT0z2I6g9q9i8e/DXRvjDpUvjb4dyRf2lIN17pWQhdsc8fwv8Ao1fNGp6deaZql1YX8ey5tpWilTHRlOD/ACrR8J+MNZ8FauNT0W/ltLteH28rIPRl6EfWvksnzetldTR6dj5ujXhGDwuI1j+Kfc+0f2e/H8/ijwydB1dZIPEegYt7iCcFZGjHCOQeenB9xXtCAgc18q+DP2lPCeqapZah4r0Q2OvW4MY1KxXcrqRyGAO7B9DkV9I+FfGWieNtKGo6HfR3druKErkMrDsVPIP1r6SWNoYqfPR0vrY+uy7EU5UlBT5rG2eRSbc0nWlzgU3selsEgCozsQqKMkngAV5Bc/tF+C7fUrrT7Se8v7m33HFrBuEm3lghz8x/njiud/aa+LP/AAjGir4X0yfGq6omZ2Q8wwdx7Fug9s18c2DXj39oNOEv9oNKq24hHzb8/Lj3zXkY3MnSqqlT+Z89mOcOhWVCjq+p9a65+0h8LPFtm1lrGj395buMbZrME/gc8H3FcDb/AAY8MfE60vtT+G2rXEMlq+JNL1NSpGehVuoB7E5Fcb8ZPhnf+AdV028nhjSDVYFlbyF/dxXGAZIx+PI9ifSqnwl+I83w78X2eos7tp0p8q8iH8UZPX6g8irwvEWNwWIUJOy/A8nEYiNTE+xxsEl3Ss/vKniDwPrXguVrfXNLubRs4Dsu6Jvo44NQTeNvEBsxZQ6vcQ2q8eXbYiH4lACa+7fDvjDSPiIuojT4PtujW7CEXciAwXD4yyoD94L0J6ZqlqPwP+H+sEvceGbJXPJaAGL/ANBIr72jxHCrFe2p380TPhid+fDVdH3/AOAfCVjq9rprCabRNPv7nOTPfNI5P/AdwFet+A9X/wCE3voLW3+E2g3wc4a5jR4I0HdmfkflX0jp3wU8BaVMslv4YsS69GmBlx/30SK+d/2mv2jbbw9YXXgXwFPCt64MN/fWuAlsvQxIR/Ge5HQe9Y4zOqNRWpwd+97fkbUMjq4ZqdeorLpa9/vPF/2kPHeh6jr58K+ELC0stC0qT/SnsxhLq7A2sc91TlR+JrwtpCRz1qJWKjByTUsZU8Gvm6k3N80nqdErXulofSf7EGkS33xcu9Rx+403TJS7ehkKqP5GvqXwTov/AAkPjnU9ZdM2Vtcu6k9Gck7R+A5/KvNP2PvCFx4d+FWteJVgP9o+I5/ItARyY0yqn6bix/4DX054Z0CLw3o9vp8OGKDMkneRz95j9TXjY7ALGYmjzfDC7fr0PsMnrvCYOdt56fLdmuMgdaKSivXcUY7jgO+eaKKKoYqjmquoabBqUSx3CZCOsiMDhkYHIIParOaVee9UmJq+h8hftV/Dl9O1JPGGnwE2d4RHe7RxHL/C/wBGAx9R718xbnZc4+tfqdq+kWWu6bdabqFvHcWV0hjlicZDKa+BfjT8HNR+F2rtNCklz4funxa3eM7P+mcnow7HvXzmaYBqXtqa0e58pnOXSjL29NadTyr5RjgfWut8A/EzWfhzq6ahpE+CSBNbvkxToP4WH9RyK45iQcEUsabzXjQnKnJSi7M+dp1Z0Z+0Ts0fol8Mvjn4Z+JFtFHb3C2esEfvLC4YK+e+w/xj6V3E3inQ7eR4p9Z06J1O1le5QFT6EZ618Yfs3fCo+LfE6a7fRsNI0aRZVB4E0/VVB9BwT+Fcx+0X4o0PX/idqDaLY20UNoDb3FxEoH2qYH5n98dM98GvpYY+osP7Wcd/xPro5rUhhFXnHV/iesfFv4GXHjLWNW8UeEfEEOuXcreZcWJmRnQdlRgcYAHAP5079mf4TXCaxP4m8QWE1s+nuYbSC5jKMZe7kHsAcD3ryH4EfEOXwF43t7ra7aVcjyb+NFJCxE/6w4/unnPpmv0NhMVzEkscoeORQyspyGB6HNZ4ShRxM/rFrPsZ4DD4fGVPrfLaSeqPLvj34a1Dxl4LbRtK0FdUu5X3pKblYfsrjo4J6+mPSvluw/Zp+I8t3DFcaZFFC7BXl+1RnYD1OM84r75EQPGBXlX7QWueJ/C3w+udS8LskUsbhbqYJukhiPBZPcHHJ6da6sZg6VT97U6djtzDL6Fa9ard2WyN7RZ/Cnw6svD/AIPXU7a3u2Vbe2t2YeZK2MkkD1OTzVvx18R/DXwz0sah4l1SKyicHyo25kmI6hFHLGvzUl1zUP7UXUje3D6ikglF08haTeDkNuPOc19qrpGg/tW/B+wTUJzZ6vbOoe4jUPJaXCjDYB6qw5x6EelLBY2Na8ErW2M8vzJYhSpwjytbI+efjT+11rvjiC50bwjFLomiyApJcs3+lXC+mRwgPoOfevmRGOMMee9e9/tBfAXTfgnp2iSQ+I7jU9Q1SV1EElusYSNFGW4JPUgV4CSc4rud+pyYiVVzaq7jtnNdT8N/h7qXxM8Zad4c01G3XLgzyjpBCD87n6D9SKyvDXh3VfFut2mj6LZy3mpXb7I4Yx19ST2A7k9K/TD4BfA+w+DvhspIY7nxFfgNfXaj8o0P9wfqeaEjTCYaVaWux6R4f0Ky8M6Jp2j6dEI7LT4EghXHRVGPzNafbrzSnGaSqsfRL3VZCUUUUAOooooATqaWiimAuao6tpFjr2nz6fqVpFdWU67JIZFyrCrtKDUtXVmJpNNM+Mfiv+yvqWhyT6p4OWTUNN5drFjmeH2X++P1+tfPE0EljNJDPG8U0Rw8bqQyH0IPSv1XB281wnjz4R+EviHCRrWlRtckfLdwfu5l/wCBDr+Oa8fF5RGp71J2fY+ex+QxrPnouz7dDzL4P63/AMJF+z/qGneE0is/EVjbzQbRyfOIJD/Vh0Pr9K+IZ0dJZEmVllQkOG6gg85985r7m8A/AHVvhX4yXVvDfiAXWj3I8m80+8Qq7R5yCGXjcvbgdxXkX7UXwqXwz4mHifTocaVrLfvwOkVx3+gYc/UGs8ZQqewjJqzjozlzLC1Xho1JKzjp8u56f+zN8OdM8JeEpdX1mW0/tjXEy0UzofJg/hQgnqQcke4r3qC+0uyhit7e7s0iQBI40lUADsAM1+W/nGFhhm4rc8IyGfxRoeWYk30H/oxaWGzKMFGnGBGEzuFKMaUafZH6X6prNromnXWoX86QWdrG0ssrHhVAyTXMeGPGmjfEfwfDfXBgjsdUidWtp5V3GMkrhgTwSOfxrw39sTxLrNpZaR4dtoZYdGvgZ57kdJnU8Re2OpB68elfIUUzQnHI+hrqxWYKlU5LXO/H5xKhW9mo3S3O2+KPgE+AvGOoaTFIJrHd5tnMrBg8THjkdx0P0r279jzTNah1HxBqCzGPQPKWKRW6ST9QR/urnP1FfPfhfR73xbr1jo2nRma9vZBGgOcLnqT6ADkn2r721D4WX9j8LYvBHhPVIdIaaPybnUWjLybWH7xlAx8zdMk8CuXLqTqV3VtZHnZRRlWxEsQlaK6ep8G/tN/FKL4jfFa/ltpt+kaQv9n2rA/K+0ne4+rZ/AVW+FPwB8X/ABbnjk0+xNjo2795qd2pWLHfYOrn6ce9fZvw7/ZC+HngeSK7vbR9f1NDkTagAY1PqsQ+X88171FDHbxpFEixxIMKiABVHoAOle8ke8sB7SfPUZ518Jfgf4X+D2lmDSLcz6nMoFzqU4Bmm9s/wr6AV6MeKdmkPNNnowioK0UNpc0AetKcdhSKG0U4c0UAJmlBzRRQAUooooASgdaKKBDgM0jDFFFNAndXHAbTWT4n8NaZ4x0W50fV7cT2NyMMnQgg8EHsQehoooaTVmKSU/dlqjyUfslfDlzkw6p/4GtVqx/Ze+H+j3trfW8GpedbSrKm68YjcpBGfxFFFYrDUkrqKOVYDDaPkR1/xQ8E6b478G6jpeooAFQzwzKMtDIq5Vh/L3Brw74U/s4+CvGHgLR9a1OO/N9cxsZTFclFJDEZA7dKKKyq0YSqJtGVbD0p4iLlG+h6/wCAPgh4O+HOoyajotjML+SMx+dcTGRlU9Quema9Hx8oooropxUVZHdTpQpxtBWEoooqkWFFFFABSGiigAFFFFAH/9k=" alt="">
+    <img class="wordmark" src="data:image/jpeg;base64,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" alt="T²CN Thakhek">
+    <div class="small" id="loginCompany">ລະບົບເກັບຄ່າເກັບຂີ້ເຫຍື້ອ</div>
+    <h1 id="loginTitle">ເຂົ້າສູ່ລະບົບ</h1>
+    <p id="loginHelp" class="small" style="margin:0"></p>
+    <form id="loginForm" novalidate>
+      <div id="loginBody" style="display:flex;flex-direction:column;gap:12px"></div>
+      <p class="err" id="loginErr" role="alert" hidden></p>
+      <button class="btn primary" type="submit" id="loginBtn">ເຂົ້າສູ່ລະບົບ</button>
+    </form>
+    <div id="loginExtra"></div>
+  </div>
+</section>
+
+<header class="band" id="appHeader" hidden>
+  <div class="wrap">
+    <div class="brand">
+      <img class="mark" id="logoImg" src="data:image/jpeg;base64,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" alt="T²CN Thakhek logo">
+      <div><b id="company">ລະບົບເກັບຄ່າເກັບຂີ້ເຫຍື້ອ</b><span>ລະບົບເກັບຄ່າບໍລິການເກັບຂີ້ເຫຍື້ອ</span></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="ເມນູ">
+      <button role="tab" data-tab="pay">ຊຳລະເງິນ</button>
+      <button role="tab" data-tab="collect">ລາຍການເກັບເງິນ</button>
+      <button role="tab" data-tab="customers">ລູກຄ້າ</button>
+      <button role="tab" data-tab="report">ລາຍງານ</button>
+      <button role="tab" data-tab="approve">ອະນຸມັດ <span class="badge" id="apBadge" hidden></span></button>
+      <button role="tab" data-tab="settings" id="tabSettings">ຕັ້ງຄ່າ</button>
+    </div>
+    <div class="who"><span id="who"></span><button class="ghostbtn" id="logout" type="button">ອອກຈາກລະບົບ</button></div>
+  </div>
+</header>
+
+<main class="wrap" id="appMain" hidden>
+  <div id="toolbar"></div>
+  <div id="content" style="display:flex;flex-direction:column;gap:16px"></div>
+  <p class="status" id="status"></p>
+</main>
+
+<dialog id="payDlg" aria-labelledby="payTitle"><form id="payForm" novalidate>
+  <div class="dlg-h"><h2 id="payTitle">ຮັບເງິນ</h2><button type="button" class="x" data-close="payDlg" aria-label="ປິດ">✕</button></div>
+  <div class="dlg-b" id="payBody"></div>
+  <div class="dlg-f" id="payFoot"></div>
+</form></dialog>
+
+<dialog id="custDlg" aria-labelledby="custTitle"><form id="custForm" novalidate>
+  <div class="dlg-h"><h2 id="custTitle">ເພີ່ມລູກຄ້າ</h2><button type="button" class="x" data-close="custDlg" aria-label="ປິດ">✕</button></div>
+  <div class="dlg-b">
+    <div class="fgrid">
+      <div class="field"><label for="c-village">ບ້ານ</label><select id="c-village"></select></div>
+      <div class="field"><label for="c-code">ລະຫັດລູກຄ້າ</label><input id="c-code" class="mono" autocomplete="off"></div>
+      <div class="field wide"><label for="c-name">ຊື່ລູກຄ້າ / ຊື່ຮ້ານ</label><input id="c-name" autocomplete="off"></div>
+      <div class="field"><label for="c-phone">ເບີໂທ</label><input id="c-phone" type="tel" autocomplete="off"></div>
+      <div class="field"><label for="c-addr">ທີ່ຢູ່ (ໜ່ວຍ, ຮ່ອມ, ເຮືອນເລກທີ)</label><input id="c-addr" autocomplete="off"></div>
+      <div class="field"><label for="c-type">ປະເພດ</label><select id="c-type"></select></div>
+      <div class="field"><label for="c-fee">ຄ່າບໍລິການ/ເດືອນ (ກີບ)</label><input id="c-fee" inputmode="numeric" autocomplete="off" class="num" placeholder="ຕາມປະເພດ"></div>
+      <div class="field"><label for="c-start">ເລີ່ມໃຊ້ບໍລິການ (ເດືອນ)</label><input id="c-start" type="month"></div>
+      <div class="field"><label for="c-active">ສະຖານະ</label><select id="c-active"><option value="1">ໃຊ້ບໍລິການຢູ່</option><option value="0">ຢຸດບໍລິການ</option></select></div>
+      <div class="field wide"><label for="c-note">ໝາຍເຫດ</label><textarea id="c-note"></textarea></div>
+    </div>
+    <p class="err" id="c-err" role="alert" hidden></p>
+  </div>
+  <div class="dlg-f"><span class="small">ປ່ອຍຄ່າບໍລິການວ່າງ = ໃຊ້ລາຄາຕາມປະເພດ</span><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn warn" id="c-del" hidden>ລຶບລູກຄ້າ</button><button type="button" class="btn" data-close="custDlg">ຍົກເລີກ</button><button type="submit" class="btn primary">ບັນທຶກ</button></div></div>
+</form></dialog>
+
+<dialog id="staffDlg" aria-labelledby="staffTitle"><form id="staffForm" novalidate>
+  <div class="dlg-h"><h2 id="staffTitle">ບັນຊີພະນັກງານ</h2><button type="button" class="x" data-close="staffDlg" aria-label="ປິດ">✕</button></div>
+  <div class="dlg-b">
+    <div class="tablebox" id="staffList"></div>
+    <div class="fgrid">
+      <div class="field"><label for="s-name">ຊື່</label><input id="s-name" autocomplete="off"></div>
+      <div class="field"><label for="s-role">ໜ້າທີ່</label><select id="s-role"><option value="staff">ພະນັກງານເກັບເງິນ</option><option value="admin">ຜູ້ບໍລິຫານ</option></select></div>
+      <div class="field"><label for="s-pin">PIN (4–6 ຕົວເລກ)</label><input id="s-pin" class="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"></div>
+    </div>
+    <p class="err" id="s-err" role="alert" hidden></p>
+  </div>
+  <div class="dlg-f"><span class="small">ອອກຈາກລະບົບອັດຕະໂນມັດ ຫຼັງບໍ່ໄດ້ໃຊ້ 30 ນາທີ</span><div style="display:flex;gap:10px"><button type="button" class="btn" data-close="staffDlg">ປິດ</button><button type="submit" class="btn primary">ເພີ່ມພະນັກງານ</button></div></div>
+</form></dialog>
+
+<dialog id="impDlg" aria-labelledby="impTitle" style="width:min(920px, calc(100vw - 24px))"><form id="impForm" novalidate>
+  <div class="dlg-h"><h2 id="impTitle">ນຳເຂົ້າຂໍ້ມູນລູກຄ້າຈາກ Excel</h2><button type="button" class="x" data-close="impDlg" aria-label="ປິດ">✕</button></div>
+  <div class="dlg-b" id="impBody"></div>
+  <div class="dlg-f"><button type="button" class="btn" data-act="impTemplate">ດາວໂຫຼດແບບຟອມ</button><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn" data-close="impDlg">ຍົກເລີກ</button><button type="submit" class="btn primary" id="impGo" disabled>ນຳເຂົ້າ</button></div></div>
+</form></dialog>
+<dialog id="invDlg" aria-labelledby="invTitle" style="width:min(860px, calc(100vw - 24px))"><form id="invForm" novalidate>
+  <div class="dlg-h"><h2 id="invTitle">ໃບຮຽກເກັບເງິນ</h2><button type="button" class="x" data-close="invDlg" aria-label="ປິດ">✕</button></div>
+  <div class="dlg-b" id="invBody"></div>
+  <div class="dlg-f" id="invFoot"></div>
+</form></dialog>
+<dialog id="slipDlg" aria-labelledby="slipTitle" style="width:min(720px, calc(100vw - 24px))"><form method="dialog">
+  <div class="dlg-h"><h2 id="slipTitle">ຫຼັກຖານການຊຳລະ</h2><button type="button" class="x" data-close="slipDlg" aria-label="ປິດ">✕</button></div>
+  <div class="dlg-b" id="slipBody"></div>
+</form></dialog>
+<input type="file" id="slipFile" accept="image/*" hidden>
+<input type="file" id="impFile" accept=".xlsx,.xls,.csv" hidden>
+<datalist id="custList"></datalist>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+/* ---------- helpers ---------- */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n) => Math.round(Number(n) || 0).toLocaleString("en-US");
+const digits = (s) => Number(String(s ?? "").replace(/[^\d]/g, "")) || 0;
+const pad = (n) => String(n).padStart(2, "0");
+const store = { get(k) { try { return localStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch (e) {} } };
+const MON = ["ມັງກອນ", "ກຸມພາ", "ມີນາ", "ເມສາ", "ພຶດສະພາ", "ມິຖຸນາ", "ກໍລະກົດ", "ສິງຫາ", "ກັນຍາ", "ຕຸລາ", "ພະຈິກ", "ທັນວາ"];
+const nowMonth = () => { const d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1); };
+const todayIso = () => { const d = new Date(); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+const mLabel = (m) => m ? MON[+m.slice(5) - 1] + " " + m.slice(0, 4) : "";
+const dLabel = (d) => d ? (+d.slice(8)) + "/" + d.slice(5, 7) + "/" + d.slice(0, 4) : "";
+const randId = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const METHODS = { cash: "ເງິນສົດ", transfer: "ໂອນເງິນ", qr: "QR" };
+const DEF_TYPES = [{ id: "home", name: "ເຮືອນ / ຄອບຄົວ", fee: 20000 }, { id: "shop", name: "ຮ້ານຄ້າ", fee: 50000 }, { id: "food", name: "ຮ້ານອາຫານ", fee: 100000 }, { id: "biz", name: "ບໍລິສັດ / ໂຮງງານ", fee: 200000 }];
+let toastT; const toast = (m) => { const el = $("toast"); el.textContent = m; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => (el.hidden = true), 1800); };
+const openDlg = (id) => { try { $(id).showModal(); } catch (e) { $(id).setAttribute("open", ""); } };
+const closeDlg = (id) => { try { $(id).close(); } catch (e) { $(id).removeAttribute("open"); } };
+
+/* ---------- state ---------- */
+const state = {
+  tab: "pay", pSlip: null, pCust: null, pYear: new Date().getFullYear(), pRows: [], pMethod: "cash", pErr: "", saving: false, month: nowMonth(), village: "all", q: "", filter: "all", custVillage: "all", rMonth: nowMonth(),
+  config: null, villages: {}, pay: {}, payYear: null,
+  staff: null, staffErr: false, me: null, isOwner: false, loginMode: "login", fails: 0, lockUntil: 0, pinFor: null, rmFor: null,
+  payFor: null, receipt: null, confirm: null, requests: {}
+};
+const NEED_APPROVALS = 2;
+const isAdmin = () => !!(state.me && state.me.role === "admin");
+const cfg = () => ({ company: "", phone: "", types: DEF_TYPES, ...(state.config || {}) });
+const typeOf = (id) => cfg().types.find((x) => x && x.id === id);
+const feeOf = (c) => Number(c.f) || (typeOf(c.t) || {}).fee || 0;
+const companyName = () => cfg().company || "T²CN Thakhek";
+
+/* ---------- storage (shared db, or this device as a fallback) ---------- */
+let db = null;
+const deepMerge = (a, b) => { const o = { ...(a || {}) }; for (const k in b) { const v = b[k]; o[k] = v && typeof v === "object" && !Array.isArray(v) && o[k] && typeof o[k] === "object" ? deepMerge(o[k], v) : v; } return o; };
+const local = { data: (() => { try { return JSON.parse(store.get("wf-db") || "{}") } catch (e) { return {} } })(), save() { store.set("wf-db", JSON.stringify(this.data)); } };
+async function setDoc(path, data) { if (db) return db.doc(path).set(data); local.data[path] = data; local.save(); localRefresh(); }
+async function mergeDoc(path, data, init) {
+  if (db) {
+    try { await db.doc(path).update(data); }
+    catch (e) { if (e && e.code === "invalid_argument") await db.doc(path).set(deepMerge(init || {}, data)); else throw e; }
+    return;
+  }
+  local.data[path] = deepMerge(local.data[path] || init || {}, data); local.save(); localRefresh();
+}
+async function delDoc(path) { if (db) return db.doc(path).delete(); delete local.data[path]; local.save(); localRefresh(); }
+function localRefresh() {
+  state.config = local.data["settings/config"] || null;
+  state.staff = (local.data["settings/staff"] || {}).list || [];
+  const v = {}, p = {};
+  const q = {};
+  Object.keys(local.data).forEach((k) => { if (k.startsWith("villages/")) v[k.slice(9)] = local.data[k]; if (k.startsWith("pay/")) p[k.slice(4)] = local.data[k]; if (k.startsWith("requests/")) q[k.slice(9)] = local.data[k]; });
+  state.villages = v; state.pay = p; state.requests = q; syncSession(); renderAll();
+}
+let payUnsub = null;
+function watchPay(year) {
+  if (!db || state.payYear === year) return;
+  state.payYear = year;
+  if (payUnsub) payUnsub();
+  payUnsub = db.collection("pay").where("year", "==", year).onSnapshot((s) => { const p = {}; s.docs.forEach((d) => (p[d.id] = d.data())); state.pay = p; renderAll(); }, () => {});
+}
+function watchAll() {
+  if (!db) { localRefresh(); return; }
+  db.doc("settings/config").onSnapshot((s) => { state.config = s.exists ? s.data() : null; renderAll(); }, () => {});
+  db.doc("settings/staff").onSnapshot((s) => { state.staffErr = false; state.staff = s.exists ? (s.data().list || []) : []; syncSession(); renderAll(); }, () => { state.staffErr = true; renderAll(); });
+  db.collection("villages").onSnapshot((s) => { const v = {}; s.docs.forEach((d) => (v[d.id] = d.data())); state.villages = v; renderAll(); }, () => {});
+  db.collection("requests").orderBy("at", "desc").limit(300).onSnapshot((s) => { const q = {}; s.docs.forEach((d) => (q[d.id] = d.data())); state.requests = q; renderAll(); }, () => {});
+  watchPay(+state.month.slice(0, 4));
+}
+const yearOfView = () => state.tab === "pay" ? state.pYear : +(state.tab === "report" ? state.rMonth : state.month).slice(0, 4);
+
+/* ---------- data views ---------- */
+const villageList = () => Object.entries(state.villages).filter(([, v]) => v && v.name).map(([id, v]) => ({ id, ...v })).sort((a, b) => (a.order || 0) - (b.order || 0) || a.name.localeCompare(b.name));
+function customers() {
+  const out = [];
+  villageList().forEach((v) => Object.entries(v.customers || {}).forEach(([id, c]) => { if (c) out.push({ ...c, id, vid: v.id, vname: v.name }); }));
+  return out.sort((a, b) => a.vname.localeCompare(b.vname) || String(a.c || "").localeCompare(String(b.c || ""), undefined, { numeric: true }));
+}
+const paidRec = (m, vid, cid) => { const d = state.pay[m + "_" + vid]; const r = d && d.paid ? d.paid[cid] : null; return r || null; };
+const activeIn = (c, m) => !c.x && (!c.s || c.s <= m);
+function unpaidMonths(c, upto) {
+  if (c.x) return [];
+  const y = upto.slice(0, 4), first = c.s && c.s > y + "-01" ? c.s : y + "-01", out = [];
+  if (first.slice(0, 4) !== y) return out;
+  for (let i = +first.slice(5); i <= +upto.slice(5); i++) { const m = y + "-" + pad(i); if (!paidRec(m, c.vid, c.id)) out.push(m); }
+  return out;
+}
+function stats(m, vid) {
+  const o = { n: 0, exp: 0, got: 0, paidN: 0 };
+  customers().forEach((c) => {
+    if (vid !== "all" && c.vid !== vid) return;
+    if (activeIn(c, m)) { o.n++; o.exp += feeOf(c); }
+    const p = paidRec(m, c.vid, c.id); if (p) { o.got += Number(p.a) || 0; o.paidN++; }
+  });
+  o.owe = Math.max(0, o.exp - o.got); o.rate = o.exp ? Math.min(100, o.got / o.exp * 100) : 0;
+  return o;
+}
+const nextCode = () => { let max = 0; customers().forEach((c) => { const n = parseInt(String(c.c || "").replace(/\D/g, ""), 10); if (n > max) max = n; }); return String(max + 1).padStart(4, "0"); };
+
+/* ---------- render ---------- */
+let tbSig = "";
+function renderAll() {
+  if (!state.me) { renderAuth(); return; }
+  $("login").hidden = true; $("appHeader").hidden = false; $("appMain").hidden = false;
+  $("company").textContent = companyName();
+  $("who").textContent = state.me.name + " · " + (isAdmin() ? "ຜູ້ບໍລິຫານ" : "ພະນັກງານ");
+  $("tabSettings").hidden = !isAdmin();
+  if (state.tab === "settings" && !isAdmin()) state.tab = "collect";
+  document.querySelectorAll("[data-tab]").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === state.tab));
+  watchPay(yearOfView());
+  const sig = state.tab + "|" + villageList().map((v) => v.id + v.name).join(",") + "|" + isAdmin();
+  if (sig !== tbSig) { tbSig = sig; renderToolbar(); }
+  $("status").textContent = db ? "ຂໍ້ມູນບັນທຶກໃນລະບົບຮ່ວມ · ອັບເດດທັນທີ" : "ບັນທຶກໄວ້ໃນເຄື່ອງນີ້ເທົ່ານັ້ນ";
+  if (state.tab === "pay") $("custList").innerHTML = customers().filter((c) => !c.x).map((c) => '<option value="' + esc(c.c + " · " + c.n) + '">' + esc(c.vname) + "</option>").join("");
+  const pend = pendingReqs(), mine = pend.filter(canApprove).length, bd = $("apBadge");
+  bd.hidden = !(isAdmin() ? mine : pend.length); bd.textContent = isAdmin() ? mine : pend.length;
+  ({ approve: renderApprove, pay: renderPay, collect: renderCollect, customers: renderCustomers, report: renderReport, settings: renderSettings })[state.tab]();
+}
+const villageOpts = (sel, withAll) => (withAll ? '<option value="all"' + (sel === "all" ? " selected" : "") + ">ທຸກບ້ານ</option>" : "") + villageList().map((v) => '<option value="' + esc(v.id) + '"' + (sel === v.id ? " selected" : "") + ">" + esc(v.name) + "</option>").join("");
+function renderToolbar() {
+  let h = "";
+  if (state.tab === "approve") {
+    h = '<div class="toolbar"><h1>ອະນຸມັດການແກ້ໄຂຂໍ້ມູນ</h1><span class="small">ການແກ້ໄຂ ຫຼື ລຶບ <strong>ຂໍ້ມູນລູກຄ້າ</strong> ແລະ ການແກ້ໄຂ ຫຼື ຍົກເລີກ <strong>ການຊຳລະທີ່ບັນທຶກແລ້ວ</strong> ຕ້ອງໄດ້ຮັບການອະນຸມັດຈາກຜູ້ບໍລິຫານ ' + NEED_APPROVALS + ' ບັນຊີ. ການປ່ຽນແປງອື່ນມີຜົນທັນທີ ແລະ ບັນທຶກໄວ້ໃນປະຫວັດ.</span></div>';
+  } else if (state.tab === "pay") {
+    h = '<div class="toolbar"><h1>ຊຳລະຄ່າທຳນຽມ</h1><div class="grp"><div class="field" style="min-width:min(360px,100%)"><label for="t-find">ຄົ້ນຫາລູກຄ້າ (ລະຫັດ ຫຼື ຊື່)</label><input type="search" id="t-find" list="custList" autocomplete="off" placeholder="ພິມລະຫັດ ຫຼື ຊື່ ແລ້ວເລືອກ…"></div></div></div>';
+  } else if (state.tab === "collect") {
+    h = '<div class="toolbar"><h1>ລາຍການເກັບເງິນປະຈຳເດືອນ</h1><div class="grp">' +
+      '<div class="field"><label for="t-month">ເດືອນ</label><input type="month" id="t-month" value="' + state.month + '"></div>' +
+      '<div class="field"><label for="t-village">ບ້ານ</label><select id="t-village">' + villageOpts(state.village, true) + "</select></div>" +
+      '<div class="field"><label for="t-q">ຄົ້ນຫາ</label><input type="search" id="t-q" placeholder="ລະຫັດ, ຊື່, ເບີໂທ…" value="' + esc(state.q) + '"></div></div></div>';
+  } else if (state.tab === "customers") {
+    h = '<div class="toolbar"><h1>ລາຍຊື່ລູກຄ້າ</h1><div class="grp">' +
+      '<div class="field"><label for="t-cvillage">ບ້ານ</label><select id="t-cvillage">' + villageOpts(state.custVillage, true) + "</select></div>" +
+      '<div class="field"><label for="t-cq">ຄົ້ນຫາ</label><input type="search" id="t-cq" placeholder="ລະຫັດ, ຊື່, ເບີໂທ…" value="' + esc(state.q) + '"></div>' +
+      (isAdmin() ? '<button class="btn" type="button" data-act="impOpen">ນຳເຂົ້າຈາກ Excel</button>' : "") +
+      '<button class="btn primary" type="button" data-act="newCust">+ ເພີ່ມລູກຄ້າ</button></div></div>';
+  } else if (state.tab === "report") {
+    h = '<div class="toolbar"><h1>ລາຍງານປະຈຳເດືອນ</h1><div class="grp">' +
+      '<div class="field"><label for="t-rmonth">ເດືອນ</label><input type="month" id="t-rmonth" value="' + state.rMonth + '"></div>' +
+      '<button class="btn" type="button" data-act="csvPaid">ສົ່ງອອກລາຍການຮັບເງິນ (Excel)</button>' +
+      '<button class="btn" type="button" data-act="csvOwe">ສົ່ງອອກລາຍຊື່ຄ້າງຈ່າຍ (Excel)</button></div></div>';
+  } else {
+    h = '<div class="toolbar"><h1>ຕັ້ງຄ່າ</h1><div class="grp"><button class="btn" type="button" data-act="staff">ບັນຊີພະນັກງານ</button></div></div>';
+  }
+  $("toolbar").innerHTML = h;
+}
+function tilesHtml(s) {
+  return '<div class="tiles">' +
+    '<div><span class="k">ລູກຄ້າທີ່ໃຊ້ບໍລິການ</span><span class="v">' + fmt(s.n) + "</span></div>" +
+    '<div><span class="k">ເງິນທີ່ຕ້ອງເກັບ · ກີບ</span><span class="v">' + fmt(s.exp) + "</span></div>" +
+    '<div><span class="k">ເກັບໄດ້ແລ້ວ · ກີບ</span><span class="v ok">' + fmt(s.got) + '</span><span class="small">' + fmt(s.paidN) + " ລາຍ</span></div>" +
+    '<div><span class="k">ຍັງຄ້າງ · ກີບ</span><span class="v owe">' + fmt(s.owe) + "</span></div>" +
+    '<div><span class="k">ອັດຕາເກັບໄດ້</span><span class="v">' + s.rate.toFixed(0) + '%</span><div class="meter" aria-hidden="true"><span style="width:' + s.rate.toFixed(1) + '%"></span></div></div></div>';
+}
+const match = (c, q) => !q || [c.c, c.n, c.p, c.a, c.vname].join(" ").toLowerCase().includes(q);
+function renderCollect() {
+  const m = state.month, q = state.q.trim().toLowerCase();
+  if (!villageList().length) { $("content").innerHTML = emptyStart(); return; }
+  const all = customers().filter((c) => (state.village === "all" || c.vid === state.village) && activeIn(c, m));
+  const rows = all.filter((c) => match(c, q)).map((c) => ({ c, p: paidRec(m, c.vid, c.id), owe: unpaidMonths(c, m) }));
+  const cnt = { all: rows.length, owe: rows.filter((r) => !r.p).length, paid: rows.filter((r) => r.p).length };
+  const list = rows.filter((r) => state.filter === "all" || (state.filter === "owe" ? !r.p : !!r.p));
+  const chips = [["all", "ທັງໝົດ"], ["owe", "ຍັງບໍ່ຈ່າຍ"], ["paid", "ຈ່າຍແລ້ວ"]].map(([k, l]) => '<button type="button" data-filter="' + k + '" aria-pressed="' + (state.filter === k) + '">' + l + " · " + cnt[k] + "</button>").join("");
+  const body = list.map(({ c, p, owe }) => {
+    const st = p ? '<span class="chip paid">ຈ່າຍແລ້ວ ' + esc(dLabel(p.d)) + '</span><div class="small mono">' + esc(p.r) + "</div>"
+      : '<span class="chip owe">ຍັງບໍ່ຈ່າຍ</span>' + (owe.length > 1 ? '<div class="small">ຄ້າງ ' + owe.length + " ເດືອນ · " + fmt(owe.length * feeOf(c)) + " ກີບ</div>" : "");
+    const act = p ? '<button class="btn sm" type="button" data-act="receipt" data-vid="' + esc(c.vid) + '" data-cid="' + esc(c.id) + '" data-r="' + esc(p.r) + '">ໃບຮັບເງິນ</button>'
+      : '<button class="btn sm primary" type="button" data-act="pay" data-vid="' + esc(c.vid) + '" data-cid="' + esc(c.id) + '">ຮັບເງິນ</button>';
+    return '<tr><td class="mono">' + esc(c.c) + "</td><td><strong>" + esc(c.n) + "</strong>" + (c.ex ? ' <span class="chip ex">ຕົວຢ່າງ</span>' : "") + '<div class="small">' + esc([c.p, c.a].filter(Boolean).join(" · ")) + "</div></td><td>" + esc(c.vname) + "</td><td>" + esc((typeOf(c.t) || {}).name || "") + '</td><td class="r num">' + fmt(feeOf(c)) + "</td><td>" + st + '</td><td><div class="rowact">' + act + "</div></td></tr>";
+  }).join("");
+  $("content").innerHTML = tilesHtml(stats(m, state.village)) +
+    '<div class="panel"><div class="toolbar" style="padding:12px 16px;border-bottom:1px solid var(--line);align-items:center"><strong>' + esc(mLabel(m)) + '</strong><div class="chips" role="group" aria-label="ສະຖານະ">' + chips + '</div><button class="btn sm" type="button" data-act="invBulk">ອອກໃບຮຽກເກັບ (ຜູ້ທີ່ຍັງຄ້າງ)</button></div>' +
+    (list.length ? '<div class="tablebox"><table style="min-width:860px"><thead><tr><th>ລະຫັດ</th><th>ລູກຄ້າ</th><th>ບ້ານ</th><th>ປະເພດ</th><th class="r">ຄ່າບໍລິການ/ເດືອນ</th><th>ສະຖານະ</th><th></th></tr></thead><tbody>' + body + "</tbody></table></div>"
+      : '<div class="empty">' + (all.length ? "ບໍ່ພົບລາຍການທີ່ກົງກັນ." : 'ຍັງບໍ່ມີລູກຄ້າໃນບ້ານນີ້.<button class="btn primary" type="button" data-act="newCust">+ ເພີ່ມລູກຄ້າ</button>') + "</div>") + "</div>";
+}
+function emptyStart() {
+  return '<div class="panel"><div class="empty"><strong style="color:var(--fg)">ເລີ່ມຕົ້ນ: ເພີ່ມບ້ານ ແລະ ລູກຄ້າ</strong><span>' + (isAdmin() ? "ໄປທີ່ ຕັ້ງຄ່າ ເພື່ອເພີ່ມບ້ານທີ່ບໍລິສັດໃຫ້ບໍລິການ ແລະ ກຳນົດລາຄາຄ່າບໍລິການ." : "ໃຫ້ຜູ້ບໍລິຫານເພີ່ມບ້ານໃນ ຕັ້ງຄ່າ ກ່ອນ.") + "</span>" + (isAdmin() ? '<button class="btn primary" type="button" data-tabgo="settings">ໄປທີ່ ຕັ້ງຄ່າ</button>' : "") + "</div></div>";
+}
+function renderCustomers() {
+  if (!villageList().length) { $("content").innerHTML = emptyStart(); return; }
+  const q = state.q.trim().toLowerCase(), m = nowMonth();
+  const list = customers().filter((c) => (state.custVillage === "all" || c.vid === state.custVillage) && match(c, q));
+  const body = list.map((c) => {
+    const owe = unpaidMonths(c, m);
+    return '<tr class="' + (c.x ? "off" : "") + '"><td class="mono">' + esc(c.c) + "</td><td><strong>" + esc(c.n) + "</strong>" + (c.ex ? ' <span class="chip ex">ຕົວຢ່າງ</span>' : "") + '<div class="small">' + esc(c.a || "") + "</div></td><td>" + esc(c.p || "") + "</td><td>" + esc(c.vname) + "</td><td>" + esc((typeOf(c.t) || {}).name || "") + '</td><td class="r num">' + fmt(feeOf(c)) + (c.f ? '<div class="small">ລາຄາພິເສດ</div>' : "") + "</td><td>" + esc(mLabel(c.s)) + "</td><td>" +
+      (pendingFor(c.vid, c.id) ? '<span class="chip owe">ລໍຖ້າອະນຸມັດ</span> ' : "") + (c.x ? '<span class="chip off">ຢຸດບໍລິການ</span>' : owe.length ? '<span class="chip owe">ຄ້າງ ' + owe.length + " ເດືອນ</span>" : '<span class="chip paid">ບໍ່ມີໜີ້ຄ້າງ</span>') +
+      '</td><td><div class="rowact"><button class="btn sm" type="button" data-act="invOne" data-vid="' + esc(c.vid) + '" data-cid="' + esc(c.id) + '">ໃບຮຽກເກັບ</button><button class="btn sm" type="button" data-act="editCust" data-vid="' + esc(c.vid) + '" data-cid="' + esc(c.id) + '">ແກ້ໄຂ</button></div></td></tr>';
+  }).join("");
+  $("content").innerHTML = '<div class="panel"><h2>' + fmt(list.length) + " ລູກຄ້າ</h2>" + (list.length ? '<div class="tablebox"><table style="min-width:900px"><thead><tr><th>ລະຫັດ</th><th>ຊື່</th><th>ເບີໂທ</th><th>ບ້ານ</th><th>ປະເພດ</th><th class="r">ຄ່າບໍລິການ/ເດືອນ</th><th>ເລີ່ມໃຊ້</th><th>ໜີ້ຄ້າງປີນີ້</th><th></th></tr></thead><tbody>' + body + "</tbody></table></div>" : '<div class="empty">ຍັງບໍ່ມີລູກຄ້າ.<button class="btn primary" type="button" data-act="newCust">+ ເພີ່ມລູກຄ້າ</button></div>') + "</div>";
+}
+function renderReport() {
+  const m = state.rMonth, s = stats(m, "all");
+  const byV = villageList().map((v) => ({ v, s: stats(m, v.id) })).filter((x) => x.s.n || x.s.got);
+  const by = (keyFn) => { const g = {}; customers().forEach((c) => { const p = paidRec(m, c.vid, c.id); if (!p) return; const k = keyFn(p); g[k] = g[k] || { n: 0, a: 0 }; g[k].n++; g[k].a += Number(p.a) || 0; }); return Object.entries(g).sort((a, b) => b[1].a - a[1].a); };
+  const small = (title, rows, head) => '<div class="panel"><h2>' + title + "</h2>" + (rows.length ? '<div class="tablebox"><table><thead><tr><th>' + head + '</th><th class="r">ລາຍການ</th><th class="r">ຈຳນວນເງິນ · ກີບ</th></tr></thead><tbody>' + rows.map(([k, v]) => "<tr><td>" + esc(k) + '</td><td class="r num">' + v.n + '</td><td class="r num">' + fmt(v.a) + "</td></tr>").join("") + "</tbody></table></div>" : '<div class="empty">ຍັງບໍ່ມີການຮັບເງິນໃນເດືອນນີ້.</div>') + "</div>";
+  $("content").innerHTML = tilesHtml(s) +
+    '<div class="panel"><h2>ຕາມບ້ານ · ' + esc(mLabel(m)) + "</h2>" + (byV.length ? '<div class="tablebox"><table style="min-width:720px"><thead><tr><th>ບ້ານ</th><th class="r">ລູກຄ້າ</th><th class="r">ຕ້ອງເກັບ</th><th class="r">ເກັບໄດ້</th><th class="r">ຍັງຄ້າງ</th><th class="r">ອັດຕາ</th></tr></thead><tbody>' +
+      byV.map(({ v, s }) => "<tr><td><strong>" + esc(v.name) + '</strong></td><td class="r num">' + s.n + '</td><td class="r num">' + fmt(s.exp) + '</td><td class="r num">' + fmt(s.got) + '</td><td class="r num" style="color:var(--owe)">' + fmt(s.owe) + '</td><td class="r num">' + s.rate.toFixed(0) + "%</td></tr>").join("") +
+      '<tr style="font-weight:700"><td>ລວມ</td><td class="r num">' + s.n + '</td><td class="r num">' + fmt(s.exp) + '</td><td class="r num">' + fmt(s.got) + '</td><td class="r num">' + fmt(s.owe) + '</td><td class="r num">' + s.rate.toFixed(0) + "%</td></tr></tbody></table></div>" : '<div class="empty">ຍັງບໍ່ມີຂໍ້ມູນ.</div>') + "</div>" +
+    '<div class="grid2">' + small("ຕາມພະນັກງານເກັບເງິນ", by((p) => p.by || "—"), "ພະນັກງານ") + small("ຕາມວິທີຊຳລະ", by((p) => METHODS[p.m] || p.m || "—"), "ວິທີຊຳລະ") + "</div>";
+}
+function renderSettings() {
+  const c = cfg(), vs = villageList();
+  const types = c.types.map((t, i) => '<tr><td><input aria-label="ຊື່ປະເພດ" id="ty-n-' + i + '" value="' + esc(t.name) + '"></td><td><input aria-label="ຄ່າບໍລິການ" class="num" inputmode="numeric" id="ty-f-' + i + '" value="' + fmt(t.fee) + '"></td></tr>').join("");
+  const vrows = vs.map((v) => { const n = Object.values(v.customers || {}).filter(Boolean).length; const cf = state.confirm === "v:" + v.id;
+    return '<tr><td><input aria-label="ຊື່ບ້ານ" id="vn-' + esc(v.id) + '" value="' + esc(v.name) + '"></td><td class="r num">' + n + '</td><td><div class="rowact"><button class="btn sm" type="button" data-act="renameV" data-vid="' + esc(v.id) + '">ບັນທຶກຊື່</button>' +
+      '<button class="btn sm warn" type="button" data-act="' + (cf ? "delV" : "askDelV") + '" data-vid="' + esc(v.id) + '">' + (cf ? "ລຶບແທ້ບໍ? (" + n + " ລູກຄ້າ)" : "ລຶບ") + "</button></div></td></tr>"; }).join("");
+  $("content").innerHTML = '<div class="grid2">' +
+    '<div class="panel"><h2>ຂໍ້ມູນບໍລິສັດ (ສະແດງໃນໃບຮັບເງິນ)</h2><div style="padding:16px;display:flex;flex-direction:column;gap:12px">' +
+      '<div class="field"><label for="co-name">ຊື່ບໍລິສັດ</label><input id="co-name" value="' + esc(c.company) + '" placeholder="ບໍລິສັດ … ຈຳກັດ"></div>' +
+      '<div class="field"><label for="co-phone">ເບີໂທ / ທີ່ຢູ່</label><input id="co-phone" value="' + esc(c.phone) + '"></div>' +
+      '<div class="field"><label for="co-payinfo">ຊ່ອງທາງຊຳລະ (ສະແດງໃນໃບຮຽກເກັບ)</label><textarea id="co-payinfo" placeholder="ເຊັ່ນ ບັນຊີ BCEL: 0000 0000 0000 · ຊື່ບັນຊີ …">' + esc(c.payInfo || "") + "</textarea></div>" +
+      '<button class="btn primary" type="button" data-act="saveCo" style="align-self:flex-start">ບັນທຶກ</button></div></div>' +
+    '<div class="panel"><h2>ປະເພດລູກຄ້າ ແລະ ລາຄາຕໍ່ເດືອນ (ກີບ)</h2><div class="tablebox"><table><thead><tr><th>ປະເພດ</th><th>ຄ່າບໍລິການ/ເດືອນ</th></tr></thead><tbody>' + types + '</tbody></table></div><div style="padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn" type="button" data-act="addType">+ ເພີ່ມປະເພດ</button><button class="btn primary" type="button" data-act="saveTypes">ບັນທຶກລາຄາ</button></div></div>' +
+    "</div>" +
+    '<div class="panel"><h2>ບ້ານທີ່ໃຫ້ບໍລິການ</h2>' + (vs.length ? '<div class="tablebox"><table style="min-width:520px"><thead><tr><th>ຊື່ບ້ານ</th><th class="r">ລູກຄ້າ</th><th></th></tr></thead><tbody>' + vrows + "</tbody></table></div>" : "") +
+    '<div style="padding:12px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end"><div class="field" style="flex:1 1 240px"><label for="nv-name">ເພີ່ມບ້ານໃໝ່</label><input id="nv-name" placeholder="ບ້ານ …"></div><button class="btn primary" type="button" data-act="addV">+ ເພີ່ມບ້ານ</button></div></div>';
+}
+
+/* ---------- payment screen ---------- */
+function findCust(vid, cid) { return customers().find((c) => c.vid === vid && c.id === cid) || null; }
+const yearMonths = (y) => Array.from({ length: 12 }, (_, i) => y + "-" + pad(i + 1));
+const custMonths = (c, y) => yearMonths(y).filter((m) => !c.s || c.s <= m);
+const openMonths = (c, y) => custMonths(c, y).filter((m) => !paidRec(m, c.vid, c.id));
+function selectCust(vid, cid, upto) {
+  const c = findCust(vid, cid); if (!c) return;
+  upto = upto || nowMonth();
+  state.tab = "pay"; state.pCust = { vid, cid }; state.pSlip = null; state.pYear = +upto.slice(0, 4); state.pErr = ""; state.pMethod = "cash";
+  const owe = unpaidMonths(c, upto);
+  const base = owe.length ? owe : openMonths(c, state.pYear).slice(0, 1);
+  state.pRows = base.map((m) => ({ m, d: todayIso(), a: feeOf(c), note: "" }));
+  renderAll();
+}
+const payTotal = () => state.pRows.reduce((t, r) => t + (Number(r.a) || 0), 0);
+function renderPay() {
+  const c = state.pCust ? findCust(state.pCust.vid, state.pCust.cid) : null;
+  if (!c) { $("content").innerHTML = '<div class="panel"><div class="empty"><strong style="color:var(--fg)">ເລືອກລູກຄ້າ</strong><span>ພິມລະຫັດ ຫຼື ຊື່ລູກຄ້າໃນຊ່ອງ ຄົ້ນຫາລູກຄ້າ ດ້ານເທິງ, ຫຼື ກົດ ຮັບເງິນ ໃນໜ້າ ລາຍການເກັບເງິນ.</span>' + (villageList().length ? '<button class="btn" type="button" data-tabgo="collect">ໄປທີ່ ລາຍການເກັບເງິນ</button>' : "") + "</div></div>"; return; }
+  const y = state.pYear, now = nowMonth(), box = (k, v) => '<div class="infobox"><span class="k">' + k + '</span><span class="v">' + v + "</span></div>";
+  const yrs = []; for (let k = new Date().getFullYear() + 1; k >= Math.min(2024, y); k--) yrs.push(k);
+  let paidTotal = 0;
+  const hist = custMonths(c, y).map((m) => {
+    const p = paidRec(m, c.vid, c.id), name = MON[+m.slice(5) - 1];
+    if (p) { paidTotal += Number(p.a) || 0; return "<tr><td>" + name + '</td><td class="num">' + esc(dLabel(p.d)) + '</td><td class="r num">' + fmt(p.a) + '</td><td><button class="btn sm" type="button" data-act="receipt" data-vid="' + esc(c.vid) + '" data-cid="' + esc(c.id) + '" data-r="' + esc(p.r) + '">ໃບຮັບເງິນ</button>' + (p.sl ? ' <button class="btn sm" type="button" data-act="slipView" data-s="' + esc(p.sl) + '">ສະລິບ</button>' : "") + "</td></tr>"; }
+    return '<tr class="' + (m <= now ? "" : "off") + '"><td>' + name + '</td><td colspan="2">' + (m <= now ? '<span class="chip owe">ຍັງບໍ່ຈ່າຍ</span>' : '<span class="small">—</span>') + "</td><td></td></tr>";
+  }).join("");
+  const chosen = state.pRows.map((r) => r.m), avail = openMonths(c, y), canAdd = avail.some((m) => !chosen.includes(m));
+  const rows = state.pRows.map((r, i) => {
+    const opts = avail.filter((m) => m === r.m || !chosen.includes(m)).map((m) => '<option value="' + m + '"' + (m === r.m ? " selected" : "") + ">" + MON[+m.slice(5) - 1] + "</option>").join("");
+    return '<tr><td><select data-row="' + i + '" data-k="m" aria-label="ເດືອນ">' + opts + '</select></td><td><input type="date" data-row="' + i + '" data-k="d" value="' + esc(r.d) + '" aria-label="ວັນທີຊຳລະ"></td><td><input class="num" inputmode="numeric" data-row="' + i + '" data-k="a" value="' + fmt(r.a) + '" aria-label="ອັດຕາ" style="text-align:right"></td><td><input data-row="' + i + '" data-k="note" value="' + esc(r.note) + '" aria-label="ໝາຍເຫດ"></td><td><button class="btn sm warn" type="button" data-act="rowDel" data-i="' + i + '">ລຶບ</button></td></tr>';
+  }).join("");
+  $("content").innerHTML =
+    '<div class="infobar">' + box("ລະຫັດ", '<span class="mono">' + esc(c.c) + "</span>") + box("ຊື່-ນາມສະກຸນ", esc(c.n)) + box("ບ້ານ", esc(c.vname) + (c.a ? " · " + esc(c.a) : "")) + box("ປະເພດ", esc((typeOf(c.t) || {}).name || "")) + box("ອັດຕາ/ເດືອນ", '<span class="num">' + fmt(feeOf(c)) + " ກີບ</span>") + '<div class="infobox" style="justify-content:center"><button class="btn" type="button" data-act="invOne" data-vid="' + esc(c.vid) + '" data-cid="' + esc(c.id) + '">ອອກໃບຮຽກເກັບ</button></div></div>' +
+    '<div class="paygrid">' +
+      '<div class="panel"><div class="ph"><h2>ປະຫວັດການຊຳລະ</h2><label class="sr" for="p-year">ປີ</label><select id="p-year" class="yearsel">' + yrs.map((k) => '<option value="' + k + '"' + (k === y ? " selected" : "") + ">ປີ " + k + "</option>").join("") + "</select></div>" +
+        '<div class="tablebox"><table><thead><tr><th>ເດືອນ</th><th>ວັນທີຊຳລະ</th><th class="r">ຈຳນວນເງິນ</th><th></th></tr></thead><tbody>' + (hist || '<tr><td colspan="4" class="small">ບໍ່ໄດ້ໃຊ້ບໍລິການໃນປີນີ້</td></tr>') +
+        '<tr style="font-weight:700"><td colspan="2">ລວມຈ່າຍແລ້ວ ປີ ' + y + '</td><td class="r num">' + fmt(paidTotal) + "</td><td></td></tr></tbody></table></div></div>" +
+      '<div class="panel entry"><div class="ph"><h2>ຊຳລະຄ່າທຳນຽມ · ປີ ' + y + '</h2><button class="btn sm" type="button" data-act="rowAdd"' + (canAdd ? "" : " disabled") + ">+ ເພີ່ມເດືອນ</button></div>" +
+        (state.pRows.length ? '<div class="tablebox"><table class="grid" style="min-width:560px"><thead><tr><th>ເດືອນ</th><th>ວັນທີຊຳລະ</th><th class="r">ອັດຕາ</th><th>ໝາຍເຫດ</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>"
+          : '<div class="empty">' + (avail.length ? "ກົດ + ເພີ່ມເດືອນ ເພື່ອເລີ່ມ." : "ຈ່າຍຄົບທຸກເດືອນຂອງປີ " + y + " ແລ້ວ.") + "</div>") +
+        '<div class="payfoot"><div class="field" style="flex:0 1 200px"><label for="p-method">ວິທີຊຳລະ</label><select id="p-method">' + Object.entries(METHODS).map(([k, v]) => '<option value="' + k + '"' + (k === state.pMethod ? " selected" : "") + ">" + v + "</option>").join("") + '</select></div>' +
+          '<div class="slipbox"><div class="field"><span class="lbl">ຫຼັກຖານການຊຳລະ (ສະລິບ)</span><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+          (state.pSlip ? '<img src="' + state.pSlip + '" alt="ສະລິບທີ່ແນບ" data-act="slipPreview"><button class="btn sm warn" type="button" data-act="slipRemove">ເອົາອອກ</button>' : '<button class="btn sm" type="button" data-act="slipPick">ແນບຮູບສະລິບ</button>' + (["transfer", "qr"].includes(state.pMethod) ? '<span class="need">ຈຳເປັນສຳລັບ ໂອນເງິນ/QR</span>' : '<span class="small">ຫຼື ວາງຮູບ (Ctrl+V)</span>')) +
+          '</div></div></div><div class="bigtotal"><span>ລວມຈຳນວນເງິນ</span><strong id="p-total" class="num">' + fmt(payTotal()) + "</strong></div></div>" +
+        (state.pErr ? '<p class="err" role="alert" style="padding:0 16px 10px">' + esc(state.pErr) + "</p>" : "") +
+        '<div class="payact"><button class="btn" type="button" data-act="payClear">ລ້າງໜ້າຈໍ</button><button class="btn primary big" type="button" data-act="paySave"' + (state.pRows.length && !state.saving ? "" : " disabled") + ">" + (state.saving ? "ກຳລັງບັນທຶກ…" : "ບັນທຶກ") + "</button></div></div>" +
+    "</div>";
+}
+async function paySave() {
+  if (state.saving || !state.pCust) return;
+  const { vid, cid } = state.pCust, c = findCust(vid, cid); if (!c) return;
+  const rows = state.pRows, ms = rows.map((r) => r.m);
+  const err = !rows.length ? "ເພີ່ມຢ່າງໜ້ອຍ 1 ເດືອນ." : new Set(ms).size !== ms.length ? "ມີເດືອນຊ້ຳກັນ." : rows.some((r) => !(Number(r.a) > 0)) ? "ກະລຸນາໃສ່ອັດຕາໃຫ້ທຸກແຖວ." : rows.some((r) => !r.d) ? "ກະລຸນາໃສ່ວັນທີຊຳລະໃຫ້ທຸກແຖວ." : rows.some((r) => paidRec(r.m, vid, cid)) ? "ມີເດືອນທີ່ຈ່າຍແລ້ວ. ກະລຸນາກວດຄືນ." : (["transfer", "qr"].includes(state.pMethod) && !state.pSlip) ? "ກະລຸນາແນບຫຼັກຖານ (ສະລິບ) ສຳລັບການຊຳລະແບບ ໂອນເງິນ/QR." : "";
+  if (err) { state.pErr = err; renderAll(); return; }
+  const d = new Date(), r = "R" + String(d.getFullYear()).slice(2) + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + Math.random().toString(36).slice(2, 6).toUpperCase();
+  state.saving = true; state.pErr = ""; renderAll();
+  const items = [];
+  try {
+    let sl = "";
+    if (state.pSlip) { sl = randId("s"); await setDoc("slips/" + sl, { img: state.pSlip, r, vid, cid, by: state.me.name, at: Date.now(), months: rows.map((x) => x.m) }); }
+    for (const row of rows.slice().sort((x, z) => x.m.localeCompare(z.m))) {
+      const rec = { a: Number(row.a), d: row.d, r, m: state.pMethod, by: state.me.name, sid: state.me.id, note: (row.note || "").trim(), sl };
+      await mergeDoc("pay/" + row.m + "_" + vid, { paid: { [cid]: rec } }, { month: row.m, year: +row.m.slice(0, 4), vid });
+      items.push({ m: row.m, rec });
+    }
+    state.pRows = []; state.pSlip = null; state.saving = false; toast("ບັນທຶກການຊຳລະແລ້ວ"); renderAll();
+    showReceipt(vid, cid, r, items);
+  } catch (ex) { state.saving = false; state.pErr = "ບັນທຶກບໍ່ສຳເລັດ" + (items.length ? " (ບັນທຶກໄດ້ " + items.length + " ເດືອນ)" : "") + ". ກວດອິນເຕີເນັດ ແລ້ວລອງໃໝ່."; renderAll(); }
+}
+document.addEventListener("input", (e) => {
+  const el = e.target; if (el.dataset.row === undefined || el.tagName === "SELECT") return;
+  const r = state.pRows[+el.dataset.row]; if (!r) return;
+  r[el.dataset.k] = el.dataset.k === "a" ? digits(el.value) : el.value;
+  if ($("p-total")) $("p-total").textContent = fmt(payTotal());
+});
+document.addEventListener("focusout", (e) => { const el = e.target; if (el.dataset && el.dataset.k === "a" && el.dataset.row !== undefined) el.value = fmt(digits(el.value)); });
+document.addEventListener("change", (e) => {
+  const el = e.target;
+  if (el.tagName === "SELECT" && el.dataset.row !== undefined) { const r = state.pRows[+el.dataset.row]; if (r) { r.m = el.value; renderAll(); } return; }
+  if (el.id === "p-year") { state.pYear = +el.value; state.pRows = []; state.pErr = ""; renderAll(); }
+  if (el.id === "p-method") { state.pMethod = el.value; renderAll(); }
+  if (el.id === "t-find") {
+    const v = el.value.trim().toLowerCase(); if (!v) return;
+    const list = customers().filter((c) => !c.x);
+    const c = list.find((x) => (x.c + " · " + x.n).toLowerCase() === v) || list.find((x) => String(x.c).toLowerCase() === v) || (() => { const f = list.filter((x) => (x.c + " " + x.n).toLowerCase().includes(v)); return f.length === 1 ? f[0] : null; })();
+    if (c) { el.value = ""; selectCust(c.vid, c.id); } else toast("ບໍ່ພົບ ຫຼື ພົບຫຼາຍກວ່າ 1 ລາຍ. ພິມໃຫ້ຊັດເຈນຂຶ້ນ.");
+  }
+});
+$("payForm").addEventListener("submit", (e) => { e.preventDefault(); closeDlg("payDlg"); });
+
+/* ---------- payment proof (slip) ---------- */
+let slipTarget = "pay";
+async function toSlip(file) {
+  if (!file || !/^image\//.test(file.type)) throw new Error("type");
+  const url = URL.createObjectURL(file), img = new Image();
+  try { await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; }); } finally { setTimeout(() => URL.revokeObjectURL(url), 1000); }
+  let max = 1200, out = "";
+  for (let pass = 0; pass < 4; pass++) {
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)), w = Math.round(img.naturalWidth * k), h = Math.round(img.naturalHeight * k);
+    const cv = document.createElement("canvas"); cv.width = w; cv.height = h; const g = cv.getContext("2d"); g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, w, h); g.drawImage(img, 0, 0, w, h);
+    for (let q = 0.8; q >= 0.4; q -= 0.1) { out = cv.toDataURL("image/jpeg", q); if (out.length < 220000) return out; }
+    max = Math.round(max * 0.75);
+  }
+  if (out.length < 240000) return out;
+  throw new Error("big");
+}
+async function takeSlip(file) {
+  try {
+    const d = await toSlip(file);
+    if (slipTarget === "receipt" && state.receipt) await attachSlipToReceipt(d);
+    else { state.pSlip = d; renderAll(); }
+  } catch (e) { toast(e && e.message === "type" ? "ກະລຸນາເລືອກໄຟລ໌ຮູບ" : "ໃຊ້ຮູບນີ້ບໍ່ໄດ້. ລອງຮູບອື່ນ."); }
+}
+async function attachSlipToReceipt(img) {
+  const R = state.receipt; if (!R) return;
+  const sl = randId("s");
+  try {
+    await setDoc("slips/" + sl, { img, r: R.r, vid: R.vid, cid: R.cid, by: state.me.name, at: Date.now(), months: R.items.map((x) => x.m), late: true });
+    for (const x of R.items) await mergeDoc("pay/" + x.m + "_" + R.vid, { paid: { [R.cid]: { sl } } }, { month: x.m, year: +x.m.slice(0, 4), vid: R.vid });
+    R.items.forEach((x) => (x.rec = { ...x.rec, sl }));
+    toast("ແນບສະລິບແລ້ວ"); showReceipt(R.vid, R.cid, R.r, R.items);
+  } catch (e) { toast("ແນບສະລິບບໍ່ສຳເລັດ. ລອງໃໝ່."); }
+}
+async function viewSlip(id, img) {
+  $("slipBody").innerHTML = '<div class="empty">ກຳລັງໂຫຼດ…</div>'; openDlg("slipDlg");
+  try {
+    const d = img ? { img } : await getDoc("slips/" + id);
+    if (!d || !d.img) { $("slipBody").innerHTML = '<div class="empty">ບໍ່ພົບຮູບສະລິບ.</div>'; return; }
+    $("slipBody").innerHTML = '<img class="slipview" src="' + d.img + '" alt="ຮູບສະລິບການຊຳລະ">' + (d.r ? '<p class="small" style="margin:0;text-align:center">ໃບຮັບເງິນ ' + esc(d.r) + (d.by ? " · ແນບໂດຍ " + esc(d.by) : "") + (d.at ? " · " + tsLabel(d.at) : "") + "</p>" : "");
+  } catch (e) { $("slipBody").innerHTML = '<div class="empty">ໂຫຼດຮູບບໍ່ໄດ້. ລອງໃໝ່.</div>'; }
+}
+$("slipFile").addEventListener("change", (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) takeSlip(f); });
+document.addEventListener("paste", (e) => {
+  if (!state.me) return;
+  const onReceipt = $("payDlg").open && state.receipt && !state.receipt.rec.sl, onPay = state.tab === "pay" && state.pCust && !$("payDlg").open;
+  if (!onReceipt && !onPay) return;
+  const it = Array.from((e.clipboardData || {}).items || []).find((x) => x.kind === "file" && /^image\//.test(x.type));
+  if (!it) return;
+  e.preventDefault(); slipTarget = onReceipt ? "receipt" : "pay"; takeSlip(it.getAsFile());
+});
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const a = b.dataset.act;
+  if (a === "slipPick") { slipTarget = "pay"; $("slipFile").click(); }
+  if (a === "slipAttach") { slipTarget = "receipt"; $("slipFile").click(); }
+  if (a === "slipRemove") { state.pSlip = null; renderAll(); }
+  if (a === "slipPreview") viewSlip(null, state.pSlip);
+  if (a === "slipView") viewSlip(b.dataset.s);
+});
+
+/* ---------- receipts ---------- */
+function receiptItems(vid, cid, r) {
+  const out = [];
+  Object.values(state.pay).forEach((d) => { if (!d || d.vid !== vid) return; const p = d.paid && d.paid[cid]; if (p && p.r === r) out.push({ m: d.month, rec: p }); });
+  return out.sort((a, b) => a.m.localeCompare(b.m));
+}
+function showReceipt(vid, cid, r, items) {
+  const c = findCust(vid, cid); if (!c) return;
+  items = items || receiptItems(vid, cid, r); if (!items.length) return;
+  const total = items.reduce((t, x) => t + (Number(x.rec.a) || 0), 0), rec = items[0].rec, co = cfg();
+  state.receipt = { vid, cid, r, items, total, rec };
+  $("payTitle").textContent = "ໃບຮັບເງິນ";
+  $("payBody").innerHTML = '<div class="receipt"><img src="' + $("logoImg").src + '" alt="" style="width:64px;height:59px;align-self:center"><div class="rh">' + esc(companyName()) + "</div>" + (co.phone ? '<div class="small" style="text-align:center">' + esc(co.phone) + "</div>" : "") +
+    '<div style="text-align:center;font-weight:600">ໃບຮັບເງິນຄ່າເກັບຂີ້ເຫຍື້ອ</div>' +
+    '<div class="row"><span class="small">ເລກທີ</span><span class="mono">' + esc(r) + "</span></div>" +
+    '<div class="row"><span class="small">ລູກຄ້າ</span><strong>' + esc(c.c) + " · " + esc(c.n) + '</strong></div><div class="row"><span class="small">ບ້ານ</span><span>' + esc(c.vname) + "</span></div>" +
+    '<table style="margin-top:6px"><thead><tr><th>ເດືອນ</th><th>ວັນທີຊຳລະ</th><th class="r">ຈຳນວນເງິນ</th></tr></thead><tbody>' + items.map((x) => "<tr><td>" + esc(mLabel(x.m)) + '</td><td class="num">' + esc(dLabel(x.rec.d)) + '</td><td class="r num">' + fmt(x.rec.a) + "</td></tr>").join("") + "</tbody></table>" +
+    '<div class="row"><span class="small">ວິທີຊຳລະ</span><span>' + esc(METHODS[rec.m] || rec.m) + '</span></div><div class="row"><span class="small">ຜູ້ຮັບເງິນ</span><span>' + esc(rec.by) + "</span></div>" +
+    '<div class="row"><span class="small">ຫຼັກຖານການຊຳລະ</span><span>' + (rec.sl ? '<button class="btn sm" type="button" data-act="slipView" data-s="' + esc(rec.sl) + '">ເບິ່ງສະລິບ</button>' : '<button class="btn sm" type="button" data-act="slipAttach">ແນບສະລິບ</button>') + "</span></div>" +
+    '<div class="total"><span>ລວມ</span><span class="num">' + fmt(total) + " ກີບ</span></div></div>";
+  const pend = pendingReqs().some((q) => q.target === "pay:" + r);
+  if (pend) $("payBody").insertAdjacentHTML("afterbegin", '<p class="notice">ໃບຮັບເງິນນີ້ມີຄຳຂໍແກ້ໄຂ/ຍົກເລີກ ລໍຖ້າອະນຸມັດຢູ່.</p>');
+  $("payFoot").innerHTML = (pend ? "<span></span>" : '<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" data-act="payEdit">ຂໍແກ້ໄຂການຊຳລະ</button><button type="button" class="btn warn" data-act="voidAsk">ຂໍຍົກເລີກ</button></div>') +
+    '<div style="display:flex;gap:10px;flex-wrap:wrap"><label class="sr" for="rc-paper">ຂະໜາດເຈ້ຍຮ້ອນ</label><select id="rc-paper" style="width:auto;min-height:44px">' + ["t80", "t58"].map((k) => '<option value="' + k + '"' + (k === (paper === "t58" ? "t58" : "t80") ? " selected" : "") + ">" + PAPER[k] + "</option>").join("") + '</select><button type="button" class="btn" data-act="rcThermal">ສັ່ງພິມ (ເຈ້ຍຮ້ອນ)</button><button type="button" class="btn" data-act="dlReceipt">ດາວໂຫຼດຮູບ</button><button type="submit" class="btn primary">ແລ້ວໆ</button></div>';
+  if (!$("payDlg").open) openDlg("payDlg");
+}
+function payEditForm() {
+  const R = state.receipt; if (!R) return;
+  const c = findCust(R.vid, R.cid);
+  $("payTitle").textContent = "ຂໍແກ້ໄຂການຊຳລະ · " + R.r;
+  $("payBody").innerHTML = '<p class="small" style="margin:0">ລູກຄ້າ ' + esc(c ? c.c + " · " + c.n : "") + '. ການແກ້ໄຂຈະມີຜົນເມື່ອຜູ້ບໍລິຫານ ' + NEED_APPROVALS + ' ບັນຊີອະນຸມັດ.</p>' +
+    '<div class="tablebox"><table class="grid" style="min-width:520px"><thead><tr><th>ເດືອນ</th><th>ວັນທີຊຳລະ</th><th class="r">ຈຳນວນເງິນ</th><th>ໝາຍເຫດ</th></tr></thead><tbody>' +
+    R.items.map((x, i) => "<tr><td>" + esc(mLabel(x.m)) + '</td><td><input type="date" id="pe-d-' + i + '" value="' + esc(x.rec.d) + '" aria-label="ວັນທີຊຳລະ"></td><td><input class="num" inputmode="numeric" id="pe-a-' + i + '" value="' + fmt(x.rec.a) + '" style="text-align:right" aria-label="ຈຳນວນເງິນ"></td><td><input id="pe-n-' + i + '" value="' + esc(x.rec.note || "") + '" aria-label="ໝາຍເຫດ"></td></tr>').join("") +
+    '</tbody></table></div><div class="fgrid"><div class="field"><label for="pe-m">ວິທີຊຳລະ</label><select id="pe-m">' + Object.entries(METHODS).map(([k, v]) => '<option value="' + k + '"' + (k === R.rec.m ? " selected" : "") + ">" + v + "</option>").join("") + '</select></div><div class="field wide"><label for="pe-why">ເຫດຜົນທີ່ແກ້ໄຂ</label><input id="pe-why" placeholder="ເຊັ່ນ ໃສ່ຈຳນວນເງິນຜິດ"></div></div><p class="err" id="pe-err" role="alert" hidden></p>';
+  $("payFoot").innerHTML = '<button type="button" class="btn" data-act="payEditBack">ກັບຄືນ</button><button type="button" class="btn primary" data-act="payEditSend">ສົ່ງຄຳຂໍແກ້ໄຂ</button>';
+}
+async function payEditSend() {
+  const R = state.receipt; if (!R || !state.me) return;
+  const fail = (m) => { $("pe-err").textContent = m; $("pe-err").hidden = false; };
+  const method = $("pe-m").value, why = $("pe-why").value.trim(), lines = [], ops = [];
+  if (method !== R.rec.m) lines.push(["ວິທີຊຳລະ", METHODS[R.rec.m] || R.rec.m, METHODS[method]]);
+  for (let i = 0; i < R.items.length; i++) {
+    const x = R.items[i], d = $("pe-d-" + i).value, a = digits($("pe-a-" + i).value), n = $("pe-n-" + i).value.trim();
+    if (!d) return fail("ກະລຸນາໃສ່ວັນທີຊຳລະໃຫ້ທຸກແຖວ.");
+    if (!(a > 0)) return fail("ຈຳນວນເງິນຕ້ອງຫຼາຍກວ່າ 0. ຖ້າຕ້ອງການຍົກເລີກ ໃຫ້ໃຊ້ ຂໍຍົກເລີກ.");
+    const ml = mLabel(x.m), ch = {};
+    if (d !== x.rec.d) { lines.push([ml + " · ວັນທີຊຳລະ", dLabel(x.rec.d), dLabel(d)]); ch.d = d; }
+    if (a !== Number(x.rec.a)) { lines.push([ml + " · ຈຳນວນເງິນ", fmt(x.rec.a) + " ກີບ", fmt(a) + " ກີບ"]); ch.a = a; }
+    if (n !== (x.rec.note || "")) { lines.push([ml + " · ໝາຍເຫດ", x.rec.note || "", n]); ch.note = n; }
+    if (method !== R.rec.m) ch.m = method;
+    if (Object.keys(ch).length) ops.push({ op: "merge", path: "pay/" + x.m + "_" + R.vid, data: { paid: { [R.cid]: ch } }, init: { month: x.m, year: +x.m.slice(0, 4), vid: R.vid } });
+  }
+  if (!ops.length) return fail("ບໍ່ມີການປ່ຽນແປງ.");
+  if (!why) return fail("ກະລຸນາໃສ່ເຫດຜົນທີ່ແກ້ໄຂ.");
+  const c = findCust(R.vid, R.cid);
+  lines.unshift(["ລູກຄ້າ", c ? c.c + " · " + c.n : "", ""], ["ເຫດຜົນ", "", why]);
+  if (await requestChange("editPay", "ແກ້ໄຂການຊຳລະ " + R.r, lines, ops, "pay:" + R.r)) { state.receipt = null; closeDlg("payDlg"); }
+}
+async function voidReceipt() {
+  const R = state.receipt; if (!R || !state.me) return;
+  const c = findCust(R.vid, R.cid);
+  const ops = R.items.map((x) => ({ op: "merge", path: "pay/" + x.m + "_" + R.vid, data: { paid: { [R.cid]: null } }, init: { month: x.m, year: +x.m.slice(0, 4), vid: R.vid } }));
+  const lines = [["ໃບຮັບເງິນ", R.r, "ຍົກເລີກ"], ["ລູກຄ້າ", (c ? c.c + " · " + c.n : ""), ""], ["ເດືອນ", R.items.map((x) => mLabel(x.m)).join(", "), ""], ["ຈຳນວນເງິນ", fmt(R.total) + " ກີບ", "0"]];
+  if (await requestChange("void", "ຍົກເລີກໃບຮັບເງິນ " + R.r, lines, ops, "pay:" + R.r)) { state.receipt = null; closeDlg("payDlg"); }
+}
+async function downloadReceipt() {
+  const R = state.receipt; if (!R) return;
+  const c = findCust(R.vid, R.cid); if (!c) return;
+  try { await document.fonts.ready; } catch (e) {}
+  const W = 640, lines = [["ເລກທີ", R.r], ["ລູກຄ້າ", c.c + " · " + c.n], ["ບ້ານ", c.vname + (c.a ? " · " + c.a : "")], ["ວິທີຊຳລະ", METHODS[R.rec.m] || R.rec.m], ["ຜູ້ຮັບເງິນ", R.rec.by]];
+  const H = 330 + lines.length * 38 + R.items.length * 32;
+  const cv = document.createElement("canvas"); cv.width = W * 2; cv.height = H * 2;
+  const g = cv.getContext("2d"); g.scale(2, 2);
+  const F = (w, s) => w + " " + s + 'px "Noto Sans Lao", "Phetsarath OT", sans-serif';
+  g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, W, H);
+  g.fillStyle = "#0E3550"; g.fillRect(0, 0, W, 96); g.fillStyle = "#2B7A2E"; g.fillRect(0, 96, W, 5); g.fillStyle = "#E8820E"; g.fillRect(0, 101, W, 3);
+  try { g.fillStyle = "#FFFFFF"; g.fillRect(22, 12, 78, 72); g.drawImage($("logoImg"), 25, 14, 72, 66); } catch (e) {}
+  g.fillStyle = "#FFFFFF"; g.textAlign = "center"; g.font = F(700, 24); g.fillText(companyName(), W / 2 + 30, 44);
+  g.font = F(400, 15); g.fillStyle = "#C9D6E2"; g.fillText(cfg().phone || "ລະບົບເກັບຄ່າບໍລິການເກັບຂີ້ເຫຍື້ອ", W / 2 + 30, 74);
+  g.fillStyle = "#102233"; g.font = F(700, 20); g.fillText("ໃບຮັບເງິນຄ່າເກັບຂີ້ເຫຍື້ອ", W / 2, 144);
+  let y = 186; g.textAlign = "left";
+  const kv = (k, v) => { g.font = F(400, 15); g.fillStyle = "#4A5866"; g.textAlign = "left"; g.fillText(k, 40, y); g.font = F(600, 16); g.fillStyle = "#102233"; g.textAlign = "right"; g.fillText(String(v), W - 40, y); };
+  lines.forEach(([k, v]) => { kv(k, v); y += 38; });
+  g.fillStyle = "#E8F0E6"; g.fillRect(30, y - 20, W - 60, 30); g.fillStyle = "#4A5866"; g.font = F(600, 14); g.textAlign = "left"; g.fillText("ເດືອນ", 40, y); g.fillText("ວັນທີຊຳລະ", 260, y); g.textAlign = "right"; g.fillText("ຈຳນວນເງິນ", W - 40, y); y += 34;
+  R.items.forEach((x) => { g.font = F(500, 15); g.fillStyle = "#102233"; g.textAlign = "left"; g.fillText(mLabel(x.m), 40, y); g.fillText(dLabel(x.rec.d), 260, y); g.textAlign = "right"; g.fillText(fmt(x.rec.a), W - 40, y); y += 32; });
+  y += 6; g.fillStyle = "#0B3A12"; g.fillRect(30, y - 6, W - 60, 56);
+  g.fillStyle = "#FFFFFF"; g.font = F(700, 18); g.textAlign = "left"; g.fillText("ລວມ", 46, y + 30);
+  g.textAlign = "right"; g.font = F(700, 24); g.fillText(fmt(R.total) + " ກີບ", W - 46, y + 31);
+  g.textAlign = "center"; g.font = F(400, 14); g.fillStyle = "#4A5866"; g.fillText("ຂອບໃຈທີ່ຊ່ວຍຮັກສາຄວາມສະອາດເມືອງທ່າແຂກ", W / 2, H - 22);
+  const blob = await new Promise((res) => cv.toBlob(res, "image/png"));
+  try {
+    const dl = window.claude && (await window.claude.use("downloads"));
+    if (!dl || !blob) throw new Error("x");
+    await dl.save({ filename: "receipt-" + R.r + ".png", data: blob }); toast("ໃບຮັບເງິນພ້ອມແລ້ວ");
+  } catch (e) { toast("ດາວໂຫຼດບໍ່ສຳເລັດ"); }
+}
+
+/* ---------- customers ---------- */
+let editCust = null;
+function openCust(vid, cid) {
+  const c = cid ? findCust(vid, cid) : null; editCust = c ? { vid, cid } : null;
+  $("custTitle").textContent = c ? "ແກ້ໄຂລູກຄ້າ" : "ເພີ່ມລູກຄ້າ";
+  $("c-village").innerHTML = villageOpts(c ? vid : (state.tab === "customers" && state.custVillage !== "all" ? state.custVillage : (state.village !== "all" ? state.village : (villageList()[0] || {}).id)), false);
+  $("c-type").innerHTML = cfg().types.map((t) => '<option value="' + esc(t.id) + '">' + esc(t.name) + " · " + fmt(t.fee) + " ກີບ</option>").join("");
+  $("c-code").value = c ? c.c || "" : nextCode(); $("c-name").value = c ? c.n || "" : ""; $("c-phone").value = c ? c.p || "" : ""; $("c-addr").value = c ? c.a || "" : "";
+  $("c-type").value = c ? c.t : cfg().types[0].id; $("c-fee").value = c && c.f ? fmt(c.f) : ""; $("c-start").value = c ? c.s || "" : nowMonth();
+  $("c-active").value = c && c.x ? "0" : "1"; $("c-note").value = c ? c.note || "" : "";
+  $("c-del").hidden = !c; $("c-del").textContent = "ຂໍລຶບລູກຄ້າ"; $("c-del").dataset.armed = "";
+  $("c-err").hidden = true; openDlg("custDlg"); setTimeout(() => $("c-name").focus(), 30);
+}
+$("custForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fail = (m) => { $("c-err").textContent = m; $("c-err").hidden = false; };
+  const vid = $("c-village").value, name = $("c-name").value.trim();
+  if (!vid) return fail("ກະລຸນາເລືອກບ້ານ.");
+  if (!name) return fail("ກະລຸນາໃສ່ຊື່ລູກຄ້າ.");
+  const prev = editCust ? findCust(editCust.vid, editCust.cid) : null;
+  const cid = editCust ? editCust.cid : randId("c");
+  const data = { c: $("c-code").value.trim(), n: name, p: $("c-phone").value.trim(), a: $("c-addr").value.trim(), t: $("c-type").value, f: digits($("c-fee").value), s: $("c-start").value || nowMonth(), x: $("c-active").value === "0", note: $("c-note").value.trim(), ex: prev ? !!prev.ex : false, at: prev ? prev.at || Date.now() : Date.now() };
+  try {
+    if (prev) {
+      const lines = custDiff(prev, data, editCust.vid, vid);
+      if (!lines.length) { closeDlg("custDlg"); toast("ບໍ່ມີການປ່ຽນແປງ"); return; }
+      const ops = [];
+      if (editCust.vid !== vid) ops.push({ op: "merge", path: "villages/" + editCust.vid, data: { customers: { [cid]: null } } });
+      ops.push({ op: "merge", path: "villages/" + vid, data: { customers: { [cid]: data } } });
+      if (await requestChange("editCust", "ແກ້ໄຂລູກຄ້າ " + (prev.c || "") + " · " + prev.n, lines, ops, editCust.vid + "/" + cid)) closeDlg("custDlg");
+      return;
+    }
+    await mergeDoc("villages/" + vid, { customers: { [cid]: data } });
+    closeDlg("custDlg"); toast("ບັນທຶກແລ້ວ");
+  } catch (ex) { fail("ບັນທຶກບໍ່ສຳເລັດ. ລອງໃໝ່."); }
+});
+$("c-del").onclick = async () => {
+  if (!editCust || !state.me) return;
+  const b = $("c-del");
+  if (!b.dataset.armed) { b.dataset.armed = "1"; b.textContent = "ຢືນຢັນຂໍລຶບ?"; return; }
+  const c = findCust(editCust.vid, editCust.cid); if (!c) return;
+  const lines = [["ລູກຄ້າ", (c.c || "") + " · " + c.n, "ລຶບອອກ"], ["ບ້ານ", c.vname, ""], ["ຄ່າບໍລິການ", fmt(feeOf(c)) + " ກີບ", ""]];
+  if (await requestChange("delCust", "ລຶບລູກຄ້າ " + (c.c || "") + " · " + c.n, lines, [{ op: "merge", path: "villages/" + editCust.vid, data: { customers: { [editCust.cid]: null } } }], editCust.vid + "/" + editCust.cid)) closeDlg("custDlg");
+};
+
+/* ---------- import customers from Excel ---------- */
+let imp = null;
+function loadXlsx() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"; sc.onload = () => res(window.XLSX); sc.onerror = () => rej(new Error("load")); document.head.appendChild(sc); });
+}
+const cellStr = (v) => v == null ? "" : String(v).replace(/\s+/g, " ").trim();
+const numOf = (v) => typeof v === "number" ? v : digits(v);
+function impTypes() {
+  const t = cfg().types.slice();
+  if (!t.some((x) => x.id === "room")) t.push({ id: "room", name: "ຫ້ອງແຖວ (ຄູນຕາມຈຳນວນຫ້ອງ)", fee: 0 });
+  if (!t.some((x) => x.id === "office")) t.push({ id: "office", name: "ອົງກອນ / ຫ້ອງການ", fee: 0 });
+  return t;
+}
+function typeFor(kind, name, hasFee, types) {
+  const pick = (id, kw) => (types.find((t) => t.id === id) || types.find((t) => kw.some((k) => t.name.includes(k))) || {}).id;
+  const k = kind + " " + name;
+  if (/ຫ້ອງແຖວ/.test(k) || (!hasFee && /ຫ້ອງ/.test(name) && !/ຫ້ອງການ/.test(name))) return pick("room", ["ຫ້ອງແຖວ"]);
+  if (!hasFee || /ສຳນັກງານ|ສໍານັກງານ|ວິທະຍາໄລ|ອົງກອນ/.test(kind)) { if (!hasFee || !/ຄົວເຮືອນ/.test(kind)) return pick("office", ["ອົງກອນ", "ຫ້ອງການ"]); }
+  if (/ທຸລະກິດ|ຮ້ານ|ຂາຍ/.test(kind)) return pick("biz", ["ທຸລະກິດ", "ຮ້ານ"]);
+  return pick("home", ["ຄົວເຮືອນ", "ເຮືອນ"]) || types[0].id;
+}
+function detectVillage(rows) {
+  for (let i = 0; i < Math.min(rows.length, 15); i++) for (const v of rows[i] || []) {
+    const m = cellStr(v).match(/ບ້ານ\s*[:：]\s*([^,\s.…][^,]*)/); if (m) { const n = m[1].trim(); if (n) return n; }
+  }
+  return "";
+}
+function parseRows(rows) {
+  let hi = -1; const col = {};
+  for (let i = 0; i < Math.min(rows.length, 40); i++) { const r = (rows[i] || []).map(cellStr); if (r.some((v) => /ຊື່/.test(v)) && r.some((v) => /ພັນທະ|ເບີ|ໜ່ວຍ|ຫນ່ວຍ|ຄ່າ/.test(v))) { hi = i; break; } }
+  if (hi < 0) return { error: "ບໍ່ພົບແຖວຫົວຕາຕະລາງ. ແຜ່ນນີ້ຕ້ອງມີຖັນ ຊື່ ແລະ ພັນທະ/ເບີໂທ/ໜ່ວຍ.", rows: [] };
+  rows[hi].map(cellStr).forEach((h, j) => {
+    const set = (k) => { if (col[k] === undefined) col[k] = j; };
+    if (/ລ(?:ຳ|ໍາ)ດັບ/.test(h)) set("seq");
+    else if (/ເລກທີ|ລະຫັດ/.test(h)) set("code");
+    else if (/ເສັ້ນທາງ|ທີ່ຢູ່/.test(h)) set("street");
+    else if (/ຊື່/.test(h)) set("name");
+    else if (/ເບີ|ໂທ/.test(h)) set("phone");
+    else if (/ໜ່ວຍ|ຫນ່ວຍ/.test(h)) set("unit");
+    else if (/ຈນ|ຄົນ/.test(h)) set("people");
+    else if (/ບໍລິສັດເກັບ/.test(h)) set("company");
+    else if (/ພັນທະ|ຄ່າ/.test(h)) set("fee");
+    else if (/ຂີ້ເຫຍື້ອ|ຖົງ/.test(h)) set("bags");
+    else if (/ປະເພດ/.test(h)) set("kind");
+    else if (/ໝາຍເຫດ|ຫມາຍເຫດ/.test(h)) set("note");
+  });
+  if (col.name === undefined) return { error: "ບໍ່ພົບຖັນ ຊື່.", rows: [] };
+  const get = (r, k) => col[k] === undefined ? null : r[col[k]];
+  const out = []; let buf = [];
+  const flush = (u) => { buf.forEach((x) => { if (!x.unit) x.unit = u; }); out.push(...buf); buf = []; };
+  for (let i = hi + 1; i < rows.length; i++) {
+    const r = rows[i] || [];
+    const tot = r.map(cellStr).find((v) => /^ລວມ/.test(v));
+    if (tot) { const m = tot.match(/ລວມ\s*(?:ໜ່ວຍ|ຫນ່ວຍ)\s*(\d+)/); flush(m ? String(+m[1]) : ""); continue; }
+    const name = cellStr(get(r, "name"));
+    if (!name || /^\d+$/.test(name) || /ຊື່\s*ແລະ|ນາມສະກຸນ/.test(name)) continue;
+    let fee = numOf(get(r, "fee")); const comp = numOf(get(r, "company")); let scaled = false;
+    if (!fee && comp) fee = comp;
+    if (fee > 0 && fee < 1000) { fee *= 1000; scaled = true; }
+    const ur = get(r, "unit"), unit = typeof ur === "number" ? String(ur) : (/^\d+$/.test(cellStr(ur)) ? String(+cellStr(ur)) : "");
+    buf.push({ row: i + 1, seq: cellStr(get(r, "seq")), code: cellStr(get(r, "code")), name, phone: cellStr(get(r, "phone")), unit, street: cellStr(get(r, "street")),
+      people: numOf(get(r, "people")), kind: cellStr(get(r, "kind")), bags: cellStr(get(r, "bags")), fee, comp: !!comp, scaled, note: cellStr(get(r, "note")) });
+  }
+  flush("");
+  return { rows: out, cols: Object.keys(col) };
+}
+function impPlan() {
+  const v = ($("imp-village") || {}).value?.trim() || "", start = ($("imp-start") || {}).value || nowMonth(), types = impTypes();
+  const rows = imp.parsed.rows, useUnits = rows.some((x) => x.unit);
+  const byName = {}; villageList().forEach((x) => (byName[x.name] = x));
+  const codes = new Set(customers().map((c) => String(c.c || "")));
+  let seqNew = parseInt(nextCode(), 10);
+  const groups = {}, st = { n: rows.length, add: 0, upd: 0, noFee: [], scaled: 0, total: 0 };
+  rows.forEach((x) => {
+    const vname = !useUnits ? v : (x.unit === "" ? v + " · ບໍ່ລະບຸໜ່ວຍ" : +x.unit === 0 ? v + " · ອົງກອນ/ຫ້ອງການ" : v + " · ໜ່ວຍ " + (+x.unit));
+    let g = groups[vname];
+    if (!g) { const ex = byName[vname]; g = groups[vname] = { vname, vid: ex ? ex.id : randId("v"), isNew: !ex, existing: ex ? ex.customers || {} : {}, customers: {}, items: [] }; }
+    const hasFee = x.fee > 0, t = typeFor(x.kind, x.name, hasFee, types);
+    const notes = []; if (!hasFee) notes.push("ຕ້ອງກຳນົດຄ່າບໍລິການ");
+    if (x.kind && !/^(ຄົວເຮືອນ|ທຸລະກິດ)$/.test(x.kind)) notes.push(x.kind);
+    if (x.note) notes.push(x.note); if (x.comp && !/ບໍລິສັດເກັບ/.test(x.note)) notes.push("ບໍລິສັດເກັບ"); if (x.bags) notes.push(x.bags); if (x.people) notes.push(x.people + " ຄົນ");
+    const a = (x.unit && +x.unit ? "ໜ່ວຍ " + (+x.unit) : useUnits && x.unit !== "" ? "ອົງກອນ / ຫ້ອງການ" : "") + (x.street ? (x.unit ? " · " : "") + x.street : "");
+    const key = x.name.toLowerCase(), hit = Object.entries(g.existing).find(([, c]) => c && cellStr(c.n).toLowerCase() === key);
+    let id, data;
+    if (hit) {
+      id = hit[0]; const c = hit[1];
+      data = { ...c, n: x.name, p: x.phone || c.p || "", a: a || c.a || "", t, f: x.fee || 0, note: notes.join(" · ") };
+      st.upd++; x.status = "upd";
+    } else {
+      let code = x.code;
+      if (!code) code = useUnits && x.seq ? String(+x.unit || 0).padStart(2, "0") + "-" + String(x.seq).padStart(2, "0") : String(seqNew++).padStart(4, "0");
+      while (codes.has(code)) code += "b";
+      codes.add(code);
+      id = randId("c");
+      data = { c: code, n: x.name, p: x.phone, a, t, f: x.fee || 0, s: start, x: false, note: notes.join(" · "), ex: false, at: Date.now() + st.add };
+      st.add++; x.status = "add";
+    }
+    x.typeName = (types.find((tt) => tt.id === t) || {}).name || t; x.vname = vname;
+    g.customers[id] = data; g.items.push(x);
+    if (!hasFee) st.noFee.push(x); if (x.scaled) st.scaled++; st.total += x.fee || 0;
+  });
+  return { groups: Object.values(groups), st, types, start, village: v };
+}
+function impRender() {
+  const go = $("impGo");
+  if (!imp) {
+    go.disabled = true;
+    $("impBody").innerHTML = '<div class="dropzone" id="impDrop"><strong>ເລືອກໄຟລ໌ Excel ລາຍຊື່ລູກຄ້າ</strong><span class="small">ຮອງຮັບ .xlsx, .xls ແລະ .csv · ລາກໄຟລ໌ມາວາງບ່ອນນີ້ກໍໄດ້</span><button class="btn primary" type="button" data-act="impPick">ເລືອກໄຟລ໌</button>' +
+      '<span class="small">ໂປຣແກຣມຊອກຫາແຖວຫົວຕາຕະລາງໃຫ້ເອງ ແລະ ອ່ານຖັນເຫຼົ່ານີ້ (ບໍ່ຈຳເປັນຕ້ອງມີຄົບ):</span><div class="cols"><span>ລຳດັບ</span><span>ເລກທີ</span><span>ຊື່ ແລະ ນາມສະກຸນ</span><span>ເບີໂທລະສັບ</span><span>ໜ່ວຍ</span><span>ເສັ້ນທາງ</span><span>ຈນ.ຄົນ</span><span>ປະເພດ</span><span>ຂີ້ເຫຍື້ອ</span><span>ພັນທະ ຄ່າຂີ້ເຫຍື້ອ</span><span>ບໍລິສັດເກັບ</span><span>ໝາຍເຫດ</span></div>' +
+      (imp === false ? '<p class="err">ອ່ານໄຟລ໌ບໍ່ໄດ້. ກວດວ່າເປັນໄຟລ໌ Excel ແລ້ວລອງໃໝ່.</p>' : "") + "</div>";
+    return;
+  }
+  if (imp.busy) { go.disabled = true; $("impBody").innerHTML = '<div class="empty">' + esc(imp.busy) + "</div>"; return; }
+  const sheets = imp.wb.SheetNames;
+  let h = '<div class="fgrid"><div class="field"><label for="imp-sheet">ແຜ່ນງານ (Sheet) · ' + esc(imp.file) + '</label><select id="imp-sheet">' + sheets.map((n) => '<option value="' + esc(n) + '"' + (n === imp.sheet ? " selected" : "") + ">" + esc(n) + " (" + (imp.counts[n] || 0) + " ລາຍ)</option>").join("") + "</select></div>" +
+    '<div class="field"><label for="imp-village">ຊື່ບ້ານ</label><input id="imp-village" value="' + esc(imp.village) + '" placeholder="ເຊັ່ນ ຈອມທອງ"></div>' +
+    '<div class="field"><label for="imp-start">ເລີ່ມເກັບເງິນເດືອນ (ລູກຄ້າໃໝ່)</label><input id="imp-start" type="month" value="' + esc(imp.start) + '"></div></div>';
+  if (imp.parsed.error || !imp.parsed.rows.length) { go.disabled = true; $("impBody").innerHTML = h + '<p class="err">' + esc(imp.parsed.error || "ບໍ່ພົບລາຍຊື່ລູກຄ້າໃນແຜ່ນນີ້.") + "</p>"; return; }
+  if (!imp.village.trim()) { go.disabled = true; $("impBody").innerHTML = h + '<p class="err">ກະລຸນາໃສ່ຊື່ບ້ານ.</p>'; return; }
+  const plan = imp.plan = impPlan(), st = plan.st;
+  const warn = [];
+  if (st.noFee.length) warn.push(st.noFee.length + " ລາຍ ບໍ່ມີຄ່າບໍລິການ (ຈະບັນທຶກເປັນ 0 ແລະ ໝາຍໄວ້ \"ຕ້ອງກຳນົດຄ່າບໍລິການ\"): " + st.noFee.slice(0, 8).map((x) => x.name).join(", ") + (st.noFee.length > 8 ? " …" : ""));
+  if (st.scaled) warn.push(st.scaled + " ລາຍ ຂຽນຄ່າບໍລິການເປັນພັນ (ເຊັ່ນ 33) ຈຶ່ງຄູນ 1,000 ໃຫ້ (33 → 33,000). ກວດໃຫ້ແນ່ໃຈ.");
+  h += '<div class="tiles"><div><span class="k">ລາຍຊື່ທີ່ພົບ</span><span class="v">' + st.n + '</span></div><div><span class="k">ລູກຄ້າໃໝ່</span><span class="v ok">' + st.add + '</span></div><div><span class="k">ອັບເດດລູກຄ້າເດີມ</span><span class="v">' + st.upd + '</span></div><div><span class="k">ກຸ່ມ/ໜ່ວຍ</span><span class="v">' + plan.groups.length + '</span></div><div><span class="k">ລວມຄ່າບໍລິການ/ເດືອນ · ກີບ</span><span class="v">' + fmt(st.total) + "</span></div></div>" +
+    (warn.length ? '<ul class="warnlist">' + warn.map((w) => "<li>" + esc(w) + "</li>").join("") + "</ul>" : "") +
+    '<div class="tablebox" style="max-height:340px;overflow:auto;border:1px solid var(--line);border-radius:10px"><table style="min-width:760px"><thead><tr><th>ແຖວ</th><th>ຊື່</th><th>ເບີໂທ</th><th>ບ້ານ / ໜ່ວຍ</th><th>ປະເພດ</th><th class="r">ຄ່າບໍລິການ</th><th></th></tr></thead><tbody>' +
+    imp.parsed.rows.slice(0, 400).map((x) => '<tr><td class="small">' + x.row + "</td><td>" + esc(x.name) + "</td><td>" + esc(x.phone) + "</td><td>" + esc(x.vname) + "</td><td>" + esc(x.typeName) + '</td><td class="r num"' + (x.fee ? "" : ' style="color:var(--owe)"') + ">" + (x.fee ? fmt(x.fee) : "—") + "</td><td>" + (x.status === "upd" ? '<span class="chip ex">ອັບເດດ</span>' : '<span class="chip paid">ໃໝ່</span>') + "</td></tr>").join("") +
+    "</tbody></table></div><p class=\"small\" style=\"margin:0\">ລູກຄ້າທີ່ມີຊື່ຊ້ຳກັບລູກຄ້າເດີມໃນບ້ານ/ໜ່ວຍດຽວກັນ ຈະຖືກອັບເດດ ບໍ່ສ້າງຊ້ຳ. ຖ້າມີການອັບເດດ, ການນຳເຂົ້າທັງໝົດຈະສົ່ງເປັນຄຳຂໍ ໃຫ້ຜູ້ບໍລິຫານ 2 ບັນຊີອະນຸມັດກ່ອນ.</p>";
+  $("impBody").innerHTML = h; go.disabled = false; go.textContent = "ນຳເຂົ້າ " + st.n + " ລາຍ";
+}
+function impOpen() { imp = null; impRender(); openDlg("impDlg"); }
+function impUseSheet(name) {
+  imp.sheet = name;
+  const rows = window.XLSX.utils.sheet_to_json(imp.wb.Sheets[name], { header: 1, defval: null, raw: true, blankrows: false });
+  imp.parsed = parseRows(rows);
+  const dv = detectVillage(rows); if (dv && !imp.villageTouched) imp.village = dv;
+}
+async function impLoad(file) {
+  if (!file) return;
+  imp = { busy: "ກຳລັງອ່ານໄຟລ໌…" }; impRender();
+  try {
+    const X = await loadXlsx(), buf = await file.arrayBuffer(), wb = X.read(buf, { type: "array" });
+    imp = { wb, file: file.name, counts: {}, village: "", start: nowMonth(), villageTouched: false };
+    let best = wb.SheetNames[0], bestN = -1;
+    wb.SheetNames.forEach((n) => { const p = parseRows(X.utils.sheet_to_json(wb.Sheets[n], { header: 1, defval: null, raw: true, blankrows: false })); imp.counts[n] = p.rows.length; if (p.rows.length > bestN) { bestN = p.rows.length; best = n; } });
+    impUseSheet(best); impRender();
+  } catch (e) { imp = false; impRender(); }
+}
+$("impFile").addEventListener("change", (e) => { const f = e.target.files[0]; e.target.value = ""; impLoad(f); });
+$("impBody").addEventListener("dragover", (e) => { e.preventDefault(); const d = $("impDrop"); if (d) d.classList.add("over"); });
+$("impBody").addEventListener("dragleave", () => { const d = $("impDrop"); if (d) d.classList.remove("over"); });
+$("impBody").addEventListener("drop", (e) => { e.preventDefault(); const f = e.dataTransfer && e.dataTransfer.files[0]; if (f) impLoad(f); });
+$("impBody").addEventListener("change", (e) => {
+  if (!imp || !imp.wb) return;
+  if (e.target.id === "imp-sheet") { impUseSheet(e.target.value); impRender(); }
+  if (e.target.id === "imp-village") { imp.village = e.target.value; imp.villageTouched = true; impRender(); }
+  if (e.target.id === "imp-start") { imp.start = e.target.value || nowMonth(); impRender(); }
+});
+$("impForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!imp || !imp.plan || !isAdmin()) return;
+  const plan = imp.plan, total = plan.groups.length; let done = 0, order = villageList().length;
+  try {
+    if (plan.types.length !== cfg().types.length) { imp.busy = "ກຳລັງບັນທຶກປະເພດລູກຄ້າ…"; impRender(); await mergeDoc("settings/config", { types: plan.types }, {}); }
+    if (plan.st.upd) {
+      const ops = plan.groups.map((g) => g.isNew ? { op: "set", path: "villages/" + g.vid, data: { name: g.vname, order: ++order, customers: g.customers } } : { op: "merge", path: "villages/" + g.vid, data: { customers: g.customers } });
+      if (new Blob([JSON.stringify(ops)]).size > 230000) { imp.busy = ""; impRender(); toast("ຂໍ້ມູນໃຫຍ່ເກີນໄປສຳລັບຄຳຂໍດຽວ. ກະລຸນານຳເຂົ້າເທື່ອລະແຜ່ນ ຫຼື ເທື່ອລະໜ່ວຍ."); return; }
+      const lines = [["ໄຟລ໌", imp.file + " · " + imp.sheet, ""], ["ລູກຄ້າໃໝ່", "", String(plan.st.add)], ["ອັບເດດລູກຄ້າເດີມ", "", String(plan.st.upd)], ["ລວມຄ່າບໍລິການ/ເດືອນ", "", fmt(plan.st.total) + " ກີບ"]];
+      if (await requestChange("import", "ນຳເຂົ້າຈາກ Excel: " + imp.file, lines, ops, "")) { closeDlg("impDlg"); imp = null; }
+      else { imp.busy = ""; impRender(); }
+      return;
+    }
+    for (const g of plan.groups) {
+      imp.busy = "ກຳລັງບັນທຶກ " + g.vname + " (" + (++done) + "/" + total + ")…"; impRender();
+      if (g.isNew) await setDoc("villages/" + g.vid, { name: g.vname, order: ++order, customers: g.customers });
+      else await mergeDoc("villages/" + g.vid, { customers: g.customers });
+    }
+    closeDlg("impDlg"); toast("ນຳເຂົ້າ " + plan.st.n + " ລາຍແລ້ວ (ໃໝ່ " + plan.st.add + ", ອັບເດດ " + plan.st.upd + ")"); imp = null;
+  } catch (ex) { imp.busy = ""; impRender(); toast("ນຳເຂົ້າບໍ່ສຳເລັດ (" + done + "/" + total + " ກຸ່ມ). ລອງໃໝ່ໄດ້ ລາຍທີ່ບັນທຶກແລ້ວຈະຖືກອັບເດດ ບໍ່ຊ້ຳ."); }
+});
+
+/* ---------- invoices (ໃບຮຽກເກັບເງິນ) ---------- */
+let inv = null;
+const loadScript = (src, test) => test() ? Promise.resolve() : new Promise((res, rej) => { const sc = document.createElement("script"); sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error("load")); document.head.appendChild(sc); });
+const loadPdf = () => loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js", () => !!(window.jspdf && window.jspdf.jsPDF)).then(() => window.jspdf.jsPDF);
+const dueDefault = (m) => { const y = +m.slice(0, 4), mo = +m.slice(5); const d = new Date(y, mo, 10); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-10"; };
+function invoiceData(c, month) {
+  const fee = feeOf(c), owe = fee > 0 ? unpaidMonths(c, month) : [];
+  const cur = owe.includes(month) ? month : null, arrears = owe.filter((m) => m !== month);
+  return { cur, arrears, fee, total: owe.length * fee, no: "INV" + month.slice(2, 4) + month.slice(5) + "-" + String(c.c || "").replace(/\s+/g, "") };
+}
+function drawInvoice(c, month, due, W) {
+  W = W || 1240; const H = Math.round(W * 0.7071), k = W / 1240;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+  const g = cv.getContext("2d"); g.scale(k, k);
+  const F = (w, s) => w + " " + s + 'px "Noto Sans Lao", "Phetsarath OT", sans-serif', M = (s) => "600 " + s + 'px "IBM Plex Mono", monospace';
+  const d = invoiceData(c, month), co = cfg(), Hh = 877;
+  const text = (t, x, y, font, color, align) => { g.font = font; g.fillStyle = color; g.textAlign = align || "left"; g.fillText(String(t ?? ""), x, y); };
+  const fit = (t, max, font) => { g.font = font; t = String(t ?? ""); while (t.length > 1 && g.measureText(t).width > max) t = t.slice(0, -2) + "…"; return t; };
+  g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, 1240, Hh);
+  g.fillStyle = "#0E3550"; g.fillRect(0, 0, 1240, 124); g.fillStyle = "#2B7A2E"; g.fillRect(0, 124, 1240, 7); g.fillStyle = "#E8820E"; g.fillRect(0, 131, 1240, 4);
+  try { g.fillStyle = "#FFFFFF"; g.fillRect(28, 16, 100, 92); g.drawImage($("logoImg"), 32, 19, 92, 86); } catch (e) {}
+  text(fit(companyName(), 560, F(700, 34)), 150, 62, F(700, 34), "#FFFFFF");
+  text(fit(co.phone || "ລະບົບເກັບຄ່າບໍລິການເກັບຂີ້ເຫຍື້ອ", 560, F(400, 20)), 150, 100, F(400, 20), "#C9D6E2");
+  text("ໃບຮຽກເກັບເງິນ", 1210, 62, F(700, 36), "#FFFFFF", "right");
+  text("ເລກທີ " + d.no, 1210, 100, F(500, 20), "#E8C66A", "right");
+  // customer + dates
+  let y = 182;
+  text("ລູກຄ້າ", 40, y, F(400, 18), "#4A5866"); text(fit((c.c ? c.c + " · " : "") + c.n, 700, F(700, 28)), 40, y + 38, F(700, 28), "#102233");
+  text(fit([c.vname, c.a].filter(Boolean).join(" · "), 700, F(400, 20)), 40, y + 72, F(400, 20), "#102233");
+  if (c.p) text("ໂທ " + c.p, 40, y + 102, F(400, 20), "#4A5866");
+  const kv = (k2, v, yy) => { text(k2, 860, yy, F(400, 18), "#4A5866"); text(v, 1210, yy, F(600, 20), "#102233", "right"); };
+  kv("ປະຈຳເດືອນ", mLabel(month), y); kv("ວັນທີອອກ", dLabel(todayIso()), y + 36); kv("ກຳນົດຊຳລະ", dLabel(due), y + 72); kv("ຄ່າບໍລິການ/ເດືອນ", fmt(d.fee) + " ກີບ", y + 108);
+  // table
+  y = 330; g.fillStyle = "#E8F0E6"; g.fillRect(30, y, 1180, 46);
+  text("ລາຍການ", 50, y + 31, F(700, 19), "#102233"); text("ຈຳນວນເດືອນ", 820, y + 31, F(700, 19), "#102233", "right"); text("ຈຳນວນເງິນ (ກີບ)", 1190, y + 31, F(700, 19), "#102233", "right");
+  y += 46;
+  const row = (label, sub, n, amt) => {
+    text(fit(label, 700, F(600, 21)), 50, y + 36, F(600, 21), "#102233");
+    if (sub) text(fit(sub, 720, F(400, 16)), 50, y + 62, F(400, 16), "#4A5866");
+    text(n, 820, y + 36, F(500, 21), "#102233", "right"); text(fmt(amt), 1190, y + 36, F(600, 22), "#102233", "right");
+    y += sub ? 78 : 56; g.fillStyle = "#D3DDD3"; g.fillRect(30, y, 1180, 1);
+  };
+  if (d.arrears.length) row("ໜີ້ຄ້າງຈ່າຍ", d.arrears.map(mLabel).join(", "), d.arrears.length, d.arrears.length * d.fee);
+  if (d.cur) row("ຄ່າເກັບຂີ້ເຫຍື້ອ ປະຈຳເດືອນ " + mLabel(d.cur), "", 1, d.fee);
+  if (!d.total) row("ບໍ່ມີຍອດຄ້າງຊຳລະ", "", "—", 0);
+  // total
+  y = Math.max(y + 20, 560);
+  g.fillStyle = "#0B3A12"; g.fillRect(700, y, 510, 74);
+  text("ຍອດທີ່ຕ້ອງຊຳລະ", 724, y + 46, F(600, 20), "#CFE6D2"); text(fmt(d.total) + " ກີບ", 1190, y + 50, F(700, 34), "#FFFFFF", "right");
+  // payment info + note
+  text("ກະລຸນາຊຳລະພາຍໃນວັນທີ " + dLabel(due), 40, y + 30, F(700, 20), "#A4520A");
+  const info = (co.payInfo || "ຊຳລະໄດ້ກັບພະນັກງານເກັບເງິນ ຫຼື ທີ່ຫ້ອງການບໍລິສັດ").split(/\n/).slice(0, 3);
+  info.forEach((ln, i) => text(fit(ln, 630, F(400, 17)), 40, y + 60 + i * 24, F(400, 17), "#102233"));
+  // footer
+  g.fillStyle = "#D3DDD3"; g.fillRect(30, Hh - 74, 1180, 1);
+  text("ຂອບໃຈທີ່ຊ່ວຍຮັກສາຄວາມສະອາດ · ກະລຸນາເກັບໃບນີ້ໄວ້ ແລະ ຂໍໃບຮັບເງິນທຸກຄັ້ງທີ່ຈ່າຍ", 40, Hh - 40, F(400, 16), "#4A5866");
+  text("ຜູ້ອອກໃບຮຽກເກັບ: " + (state.me ? state.me.name : ""), 1210, Hh - 40, F(400, 16), "#4A5866", "right");
+  g.strokeStyle = "#0E3550"; g.lineWidth = 2; g.strokeRect(1, 1, 1238, Hh - 2);
+  return cv;
+}
+function invOpenOne(vid, cid) {
+  const c = findCust(vid, cid); if (!c) return;
+  const month = state.tab === "collect" ? state.month : nowMonth();
+  inv = { mode: "one", vid, cid, month, due: dueDefault(month) };
+  invRenderOne(); openDlg("invDlg");
+}
+async function invRenderOne() {
+  const c = findCust(inv.vid, inv.cid); if (!c) return;
+  if (+inv.month.slice(0, 4) !== state.payYear) watchPay(+inv.month.slice(0, 4));
+  $("invTitle").textContent = "ໃບຮຽກເກັບເງິນ · " + c.n;
+  try { await document.fonts.ready; } catch (e) {}
+  const d = invoiceData(c, inv.month);
+  $("invBody").innerHTML = '<div class="fgrid"><div class="field"><label for="inv-month">ປະຈຳເດືອນ</label><input type="month" id="inv-month" value="' + inv.month + '"></div><div class="field"><label for="inv-due">ກຳນົດຊຳລະ</label><input type="date" id="inv-due" value="' + inv.due + '"></div>' + '<div class="field"><label for="inv-paper">ຂະໜາດເຈ້ຍ</label><select id="inv-paper">' + Object.entries(PAPER).map(([k, v]) => '<option value="' + k + '"' + (k === paper ? " selected" : "") + ">" + v + "</option>").join("") + "</select></div>" + "</div>" +
+    (feeOf(c) ? "" : '<p class="notice">ລູກຄ້ານີ້ຍັງບໍ່ມີຄ່າບໍລິການ. ໃສ່ລາຄາໃນ ລູກຄ້າ → ແກ້ໄຂ ກ່ອນ.</p>') +
+    '<img class="invprev" id="invImg" alt="ຕົວຢ່າງໃບຮຽກເກັບ ' + esc(c.n) + " ຍອດ " + fmt(d.total) + ' ກີບ">';
+  if (paper === "a5") { $("invImg").classList.remove("thermal"); $("invImg").src = drawInvoice(c, inv.month, inv.due, 1240).toDataURL("image/png"); }
+  else { $("invImg").classList.add("thermal"); $("invImg").src = drawThermal(invoiceBlocks(c, inv.month, inv.due), thermalSpec(paper).px).toDataURL("image/png"); }
+  $("invFoot").innerHTML = '<span class="small">ລວມ ' + fmt(d.total) + ' ກີບ · ຄຳນວນຈາກເດືອນທີ່ຍັງບໍ່ຈ່າຍໃນປີ ' + inv.month.slice(0, 4) + '</span><div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn" data-act="invPng">ດາວໂຫຼດຮູບ</button><button type="button" class="btn" data-act="invPdf">ດາວໂຫຼດ PDF</button><button type="button" class="btn primary" data-act="invPrint">ສັ່ງພິມ' + (paper === "a5" ? "" : " (" + thermalSpec(paper).mm + " mm)") + "</button></div>";
+}
+function invBulkList() {
+  const m = inv.month;
+  return customers().filter((c) => (inv.village === "all" || c.vid === inv.village) && activeIn(c, m)).map((c) => ({ c, d: invoiceData(c, m) })).filter((x) => x.d.total > 0);
+}
+function invOpenBulk() {
+  inv = { mode: "bulk", month: state.month, due: dueDefault(state.month), village: state.village };
+  invRenderBulk(); openDlg("invDlg");
+}
+function invRenderBulk() {
+  const list = invBulkList(), sum = list.reduce((t, x) => t + x.d.total, 0);
+  $("invTitle").textContent = "ອອກໃບຮຽກເກັບ ຫຼາຍລາຍ";
+  $("invBody").innerHTML = '<div class="fgrid"><div class="field"><label for="inv-month">ປະຈຳເດືອນ</label><input type="month" id="inv-month" value="' + inv.month + '"></div><div class="field"><label for="inv-due">ກຳນົດຊຳລະ</label><input type="date" id="inv-due" value="' + inv.due + '"></div><div class="field"><label for="inv-village">ບ້ານ / ໜ່ວຍ</label><select id="inv-village">' + villageOpts(inv.village, true) + "</select></div>" + '<div class="field"><label for="inv-paper">ຂະໜາດເຈ້ຍ</label><select id="inv-paper">' + Object.entries(PAPER).map(([k, v]) => '<option value="' + k + '"' + (k === paper ? " selected" : "") + ">" + v + "</option>").join("") + "</select></div>" + "</div>" +
+    '<div class="tiles"><div><span class="k">ລູກຄ້າທີ່ມີຍອດຄ້າງ</span><span class="v">' + list.length + '</span></div><div><span class="k">ລວມຍອດຮຽກເກັບ · ກີບ</span><span class="v owe">' + fmt(sum) + '</span></div><div><span class="k">' + (paper === "a5" ? "ໜ້າ A4 (2 ໃບ/ໜ້າ)" : "ໃບເຈ້ຍຮ້ອນ " + thermalSpec(paper).mm + " mm") + '</span><span class="v">' + (paper === "a5" ? Math.ceil(list.length / 2) : list.length) + "</span></div></div>" +
+    (list.length > 150 ? '<p class="notice">ຫຼາຍກວ່າ 150 ໃບ ໄຟລ໌ຈະໃຫຍ່ ແລະ ສ້າງຊ້າ. ແນະນຳໃຫ້ເລືອກເທື່ອລະໜ່ວຍ.</p>' : "") +
+    '<div class="tablebox" style="max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:10px"><table><thead><tr><th>ລະຫັດ</th><th>ລູກຄ້າ</th><th>ບ້ານ</th><th class="r">ເດືອນທີ່ຄ້າງ</th><th class="r">ຍອດ · ກີບ</th></tr></thead><tbody>' +
+    (list.map((x) => '<tr><td class="mono">' + esc(x.c.c) + "</td><td>" + esc(x.c.n) + "</td><td>" + esc(x.c.vname) + '</td><td class="r num">' + (x.d.arrears.length + (x.d.cur ? 1 : 0)) + '</td><td class="r num">' + fmt(x.d.total) + "</td></tr>").join("") || '<tr><td colspan="5" class="small">ບໍ່ມີລູກຄ້າທີ່ຄ້າງຊຳລະ.</td></tr>') + "</tbody></table></div>" +
+    '<p class="status" id="invProg"></p>';
+  $("invFoot").innerHTML = '<span class="small">' + (paper === "a5" ? "ໃບ A4 ແຕ່ລະໜ້າມີ 2 ໃບຮຽກເກັບ ພ້ອມເສັ້ນຕັດ" : "PDF ດຽວ · ໜຶ່ງໃບຕໍ່ໜຶ່ງໜ້າ ສຳລັບເຄື່ອງພິມເຈ້ຍຮ້ອນ") + '</span><div style="display:flex;gap:10px"><button type="button" class="btn" data-close="invDlg">ປິດ</button><button type="button" class="btn" data-act="invBulkGo"' + (list.length ? "" : " disabled") + '>ດາວໂຫຼດ PDF</button><button type="button" class="btn primary" data-act="invBulkPrint"' + (list.length ? "" : " disabled") + ">ສັ່ງພິມ " + list.length + " ໃບ</button></div>";
+}
+$("invBody").addEventListener("change", (e) => {
+  if (!inv) return;
+  if (e.target.id === "inv-paper") { paper = e.target.value; store.set("wf-paper", paper); }
+  if (e.target.id === "inv-month" && e.target.value) { inv.month = e.target.value; inv.due = dueDefault(inv.month); }
+  if (e.target.id === "inv-due" && e.target.value) inv.due = e.target.value;
+  if (e.target.id === "inv-village") inv.village = e.target.value;
+  inv.mode === "one" ? invRenderOne() : invRenderBulk();
+});
+$("invForm").addEventListener("submit", (e) => { e.preventDefault(); });
+async function saveBlob(name, blob, okMsg) {
+  try { const dl = window.claude && (await window.claude.use("downloads")); if (!dl || !blob) throw new Error("x"); await dl.save({ filename: name, data: blob }); toast(okMsg); }
+  catch (e) { toast("ດາວໂຫຼດບໍ່ສຳເລັດ"); }
+}
+async function invDownload(kind) {
+  const c = inv && findCust(inv.vid, inv.cid); if (!c) return;
+  try { await document.fonts.ready; } catch (e) {}
+  const no = invoiceData(c, inv.month).no;
+  const auto = kind === "print"; if (auto) kind = "pdf";
+  if (paper !== "a5") return thermalOut(no, [invoiceBlocks(c, inv.month, inv.due)], kind, "ໃບຮຽກເກັບ", null, auto);
+  if (kind === "png") { const cv = drawInvoice(c, inv.month, inv.due, 1240); const blob = await new Promise((r) => cv.toBlob(r, "image/png")); return saveBlob(no + ".png", blob, "ໃບຮຽກເກັບພ້ອມແລ້ວ"); }
+  try {
+    const JsPDF = await loadPdf(), doc = new JsPDF({ orientation: "landscape", unit: "mm", format: "a5" });
+    doc.addImage(drawInvoice(c, inv.month, inv.due, 1754).toDataURL("image/jpeg", 0.9), "JPEG", 0, 0, 210, 148.5);
+    if (auto) { try { doc.autoPrint({ variant: "non-conform" }); } catch (e) {} }
+    await saveBlob(no + (auto ? "-print" : "") + ".pdf", doc.output("blob"), auto ? "ໃບຮຽກເກັບ ພ້ອມພິມ · ເປີດໄຟລ໌ແລ້ວຈະຂຶ້ນໜ້າສັ່ງພິມ" : "ໃບຮຽກເກັບ PDF ພ້ອມແລ້ວ");
+  } catch (e) { toast("ສ້າງ PDF ບໍ່ສຳເລັດ. ລອງດາວໂຫຼດເປັນຮູບແທນ."); }
+}
+async function invBulkGo(auto) {
+  const list = invBulkList(); if (!list.length) return;
+  const prog = (t) => { const el = $("invProg"); if (el) el.textContent = t; };
+  try {
+    prog("ກຳລັງໂຫຼດ…"); try { await document.fonts.ready; } catch (e) {}
+    if (paper !== "a5") { prog("ກຳລັງສ້າງ…"); await thermalOut("invoices-" + inv.month + "-" + paper, list.map((x) => invoiceBlocks(x.c, inv.month, inv.due)), "pdf", "ໃບຮຽກເກັບ " + list.length + " ໃບ", null, auto); prog(""); return; }
+    const JsPDF = await loadPdf(), doc = new JsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    for (let i = 0; i < list.length; i++) {
+      if (i && i % 2 === 0) doc.addPage();
+      const top = i % 2 === 0 ? 0 : 148.5;
+      doc.addImage(drawInvoice(list[i].c, inv.month, inv.due, 1100).toDataURL("image/jpeg", 0.78), "JPEG", 0, top, 210, 148.5);
+      if (i % 2 === 0) { doc.setDrawColor(150); doc.setLineDashPattern([2, 2], 0); doc.line(0, 148.5, 210, 148.5); doc.setLineDashPattern([], 0); }
+      if (i % 10 === 0) { prog("ກຳລັງສ້າງ " + (i + 1) + "/" + list.length + "…"); await new Promise((r) => setTimeout(r, 0)); }
+    }
+    prog("");
+    const vname = inv.village === "all" ? "all" : ((villageList().find((v) => v.id === inv.village) || {}).name || "village").replace(/[^\w຀-໿-]+/g, "_");
+    if (auto) { try { doc.autoPrint({ variant: "non-conform" }); } catch (e) {} }
+    await saveBlob("invoices-" + inv.month + "-" + vname + (auto ? "-print" : "") + ".pdf", doc.output("blob"), "ໃບຮຽກເກັບ " + list.length + " ໃບ ພ້ອມແລ້ວ");
+  } catch (e) { prog("ສ້າງ PDF ບໍ່ສຳເລັດ. ກວດອິນເຕີເນັດ ແລ້ວລອງໃໝ່."); }
+}
+
+/* ---------- thermal paper (ເຈ້ຍຮ້ອນ) ---------- */
+const PAPER = { a5: "A5 (ເຈ້ຍປົກກະຕິ)", t80: "ເຈ້ຍຮ້ອນ 80 mm", t58: "ເຈ້ຍຮ້ອນ 58 mm" };
+let paper = store.get("wf-paper"); if (!PAPER[paper]) paper = "a5";
+const thermalSpec = (p) => p === "t58" ? { px: 384, mm: 58 } : { px: 576, mm: 80 };
+const segWords = (t) => { try { if (window.Intl && Intl.Segmenter) return Array.from(new Intl.Segmenter("lo", { granularity: "word" }).segment(t), (x) => x.segment); } catch (e) {} return Array.from(t); };
+const segChars = (t) => { try { if (window.Intl && Intl.Segmenter) return Array.from(new Intl.Segmenter("lo", { granularity: "grapheme" }).segment(t), (x) => x.segment); } catch (e) {} return Array.from(t); };
+function wrapText(g, text, maxW) {
+  const out = []; let line = "";
+  const push = (piece) => {
+    if (g.measureText(line + piece).width <= maxW) { line += piece; return; }
+    if (line.trim()) { out.push(line.trimEnd()); line = ""; piece = piece.replace(/^\s+/, ""); }
+    if (g.measureText(piece).width <= maxW) { line = piece; return; }
+    for (const ch of segChars(piece)) { if (g.measureText(line + ch).width > maxW && line) { out.push(line); line = ""; } line += ch; }
+  };
+  String(text ?? "").split("\n").forEach((para, i) => { if (i) { out.push(line.trimEnd()); line = ""; } segWords(para).forEach(push); });
+  if (line.trim() || !out.length) out.push(line.trimEnd());
+  return out;
+}
+function drawThermal(blocks, W) {
+  const sc = W / 576, padX = Math.round(10 * sc), inner = W - padX * 2;
+  const F = (bold, size) => (bold ? "700 " : "400 ") + Math.max(13, Math.round(size * sc)) + 'px "Noto Sans Lao", "Phetsarath OT", sans-serif';
+  const g0 = document.createElement("canvas").getContext("2d");
+  const ops = []; let y = Math.round(12 * sc);
+  blocks.filter(Boolean).forEach((b) => {
+    if (b.t === "gap") { y += Math.round((b.h || 8) * sc); return; }
+    if (b.t === "line") { y += Math.round(8 * sc); ops.push({ t: "line", y }); y += Math.round(10 * sc); return; }
+    if (b.t === "logo") { const s = Math.round(150 * sc); ops.push({ t: "logo", y, s }); y += s + Math.round(6 * sc); return; }
+    const font = F(b.bold, b.size || 22), lh = Math.round(Math.max(13, (b.size || 22) * sc) * 1.45);
+    g0.font = font;
+    if (b.t === "text") { wrapText(g0, b.s, inner).forEach((ln) => { y += lh; ops.push({ t: "text", y: y - Math.round(lh * 0.28), s: ln, font, align: b.align || "left" }); }); return; }
+    if (b.t === "kv") {
+      const kf = F(false, b.ksize || Math.min(b.size || 22, 22)), v = String(b.v ?? ""); g0.font = kf; const kw = g0.measureText(b.k).width; g0.font = font; const vw = g0.measureText(v).width;
+      if (kw + vw + 16 * sc <= inner) { y += lh; ops.push({ t: "kv", y: y - Math.round(lh * 0.28), k: b.k, v, kf, font }); }
+      else { const klh = Math.round(lh * 0.9); y += klh; ops.push({ t: "text", y: y - Math.round(klh * 0.28), s: b.k, font: kf, align: "left" }); wrapText(g0, v, inner).forEach((ln) => { y += lh; ops.push({ t: "text", y: y - Math.round(lh * 0.28), s: ln, font, align: "right" }); }); }
+    }
+  });
+  y += Math.round(28 * sc);
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = y;
+  const g = cv.getContext("2d"); g.fillStyle = "#FFFFFF"; g.fillRect(0, 0, W, y); g.fillStyle = "#000000"; g.strokeStyle = "#000000"; g.textBaseline = "alphabetic";
+  ops.forEach((o) => {
+    if (o.t === "line") { g.save(); g.setLineDash([Math.round(8 * sc), Math.round(6 * sc)]); g.lineWidth = Math.max(2, Math.round(2 * sc)); g.beginPath(); g.moveTo(padX, o.y); g.lineTo(W - padX, o.y); g.stroke(); g.restore(); }
+    else if (o.t === "logo") {
+      try { const lg = $("logoImg"), x = Math.round((W - o.s) / 2); g.drawImage(lg, x, o.y, o.s, Math.round(o.s * 0.92));
+        const im = g.getImageData(x, o.y, o.s, Math.round(o.s * 0.92)), px = im.data;
+        for (let i = 0; i < px.length; i += 4) { const l = 0.299 * px[i] + 0.587 * px[i + 1] + 0.114 * px[i + 2], v = l > 200 ? 255 : l > 120 ? 140 : 0; px[i] = px[i + 1] = px[i + 2] = v; }
+        g.putImageData(im, x, o.y); } catch (e) {}
+    }
+    else if (o.t === "text") { g.font = o.font; g.textAlign = o.align === "center" ? "center" : o.align === "right" ? "right" : "left"; g.fillText(o.s, o.align === "center" ? W / 2 : o.align === "right" ? W - padX : padX, o.y); }
+    else if (o.t === "kv") { g.font = o.kf; g.textAlign = "left"; g.fillText(o.k, padX, o.y); g.font = o.font; g.textAlign = "right"; g.fillText(o.v, W - padX, o.y); }
+  });
+  return cv;
+}
+function headBlocks(title, no) {
+  const co = cfg();
+  return [{ t: "logo" }, { t: "text", s: companyName(), size: 30, bold: 1, align: "center" }, co.phone ? { t: "text", s: co.phone, size: 19, align: "center" } : null,
+    { t: "line" }, { t: "text", s: title, size: 34, bold: 1, align: "center" }, { t: "text", s: "ເລກທີ " + no, size: 20, align: "center" }, { t: "line" }];
+}
+function custBlocks(c) {
+  return [{ t: "kv", k: "ລະຫັດລູກຄ້າ", v: c.c || "", bold: 1 }, { t: "text", s: c.n, size: 26, bold: 1 }, { t: "text", s: [c.vname, c.a].filter(Boolean).join(" · "), size: 20 }, c.p ? { t: "text", s: "ໂທ " + c.p, size: 20 } : null];
+}
+function invoiceBlocks(c, month, due) {
+  const d = invoiceData(c, month), co = cfg();
+  const b = headBlocks("ໃບຮຽກເກັບເງິນ", d.no).concat(custBlocks(c), [{ t: "gap", h: 6 }, { t: "kv", k: "ປະຈຳເດືອນ", v: mLabel(month) }, { t: "kv", k: "ວັນທີອອກ", v: dLabel(todayIso()) },
+    { t: "kv", k: "ກຳນົດຊຳລະ", v: dLabel(due), bold: 1 }, { t: "kv", k: "ຄ່າບໍລິການ/ເດືອນ", v: fmt(d.fee) }, { t: "line" }]);
+  if (d.arrears.length) b.push({ t: "kv", k: "ໜີ້ຄ້າງ " + d.arrears.length + " ເດືອນ", v: fmt(d.arrears.length * d.fee) }, { t: "text", s: d.arrears.map(mLabel).join(", "), size: 18 });
+  if (d.cur) b.push({ t: "kv", k: "ເດືອນ " + mLabel(d.cur), v: fmt(d.fee) });
+  if (!d.total) b.push({ t: "text", s: "ບໍ່ມີຍອດຄ້າງຊຳລະ", size: 22, align: "center" });
+  b.push({ t: "line" }, { t: "kv", k: "ຍອດຊຳລະ", v: fmt(d.total) + " ກີບ", size: 32, ksize: 24, bold: 1 }, { t: "line" },
+    { t: "text", s: "ກະລຸນາຊຳລະພາຍໃນ " + dLabel(due), size: 22, bold: 1, align: "center" });
+  (co.payInfo || "ຊຳລະໄດ້ກັບພະນັກງານເກັບເງິນ ຫຼື ທີ່ຫ້ອງການບໍລິສັດ").split(/\n/).forEach((l) => b.push({ t: "text", s: l, size: 19, align: "center" }));
+  b.push({ t: "gap", h: 10 }, { t: "text", s: "ຂອບໃຈທີ່ຊ່ວຍຮັກສາຄວາມສະອາດ", size: 18, align: "center" }, { t: "text", s: "ຜູ້ອອກ: " + (state.me ? state.me.name : "") + " · " + tsLabel(Date.now()), size: 16, align: "center" });
+  return b;
+}
+function receiptBlocks(R) {
+  const c = findCust(R.vid, R.cid); if (!c) return [];
+  const b = headBlocks("ໃບຮັບເງິນ", R.r).concat(custBlocks(c), [{ t: "line" }]);
+  R.items.forEach((x) => b.push({ t: "kv", k: mLabel(x.m) + " · " + dLabel(x.rec.d), v: fmt(x.rec.a) }));
+  b.push({ t: "line" }, { t: "kv", k: "ລວມຮັບ", v: fmt(R.total) + " ກີບ", size: 32, ksize: 24, bold: 1 }, { t: "line" },
+    { t: "kv", k: "ວິທີຊຳລະ", v: METHODS[R.rec.m] || R.rec.m }, { t: "kv", k: "ຜູ້ຮັບເງິນ", v: R.rec.by }, R.rec.sl ? { t: "kv", k: "ຫຼັກຖານ", v: "ມີສະລິບແນບ" } : null,
+    { t: "gap", h: 10 }, { t: "text", s: "ຂອບໃຈທີ່ຊ່ວຍຮັກສາຄວາມສະອາດ", size: 18, align: "center" }, { t: "text", s: "ພິມເມື່ອ " + tsLabel(Date.now()), size: 16, align: "center" });
+  return b;
+}
+async function thermalOut(name, blockSets, kind, label, forcePaper, auto) {
+  const sp = thermalSpec(forcePaper || paper);
+  try { await document.fonts.ready; } catch (e) {}
+  if (kind === "png") { const blob = await new Promise((r) => drawThermal(blockSets[0], sp.px).toBlob(r, "image/png")); return saveBlob(name + "-" + sp.mm + "mm.png", blob, label + " ພ້ອມແລ້ວ"); }
+  try {
+    const JsPDF = await loadPdf(); let doc = null;
+    for (let i = 0; i < blockSets.length; i++) {
+      const cv = drawThermal(blockSets[i], sp.px), hmm = Math.round(cv.height / cv.width * sp.mm * 10) / 10;
+      if (!doc) doc = new JsPDF({ orientation: "portrait", unit: "mm", format: [sp.mm, Math.max(hmm, sp.mm + 1)] }); else doc.addPage([sp.mm, Math.max(hmm, sp.mm + 1)], "portrait");
+      doc.addImage(cv.toDataURL("image/png"), "PNG", 0, 0, sp.mm, hmm);
+      if (i % 10 === 9) await new Promise((r) => setTimeout(r, 0));
+    }
+    if (auto) { try { doc.autoPrint({ variant: "non-conform" }); } catch (e) {} }
+    await saveBlob(name + "-" + sp.mm + "mm" + (auto ? "-print" : "") + ".pdf", doc.output("blob"), auto ? label + " ພ້ອມພິມ · ເປີດໄຟລ໌ແລ້ວຈະຂຶ້ນໜ້າສັ່ງພິມ" : label + " ເຈ້ຍຮ້ອນ ພ້ອມແລ້ວ");
+  } catch (e) { toast("ສ້າງ PDF ບໍ່ສຳເລັດ. ລອງດາວໂຫຼດເປັນຮູບແທນ."); }
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest('[data-act="rcThermal"]'); if (!b || !state.receipt) return;
+  const p = ($("rc-paper") || {}).value || "t80";
+  thermalOut("receipt-" + state.receipt.r, [receiptBlocks(state.receipt)], "pdf", "ໃບຮັບເງິນ", p, true);
+});
+
+/* ---------- change requests & 2-admin approval ---------- */
+const reqList = () => Object.entries(state.requests).filter(([, q]) => q && q.status).map(([id, q]) => ({ id, ...q })).sort((a, b) => (b.at || 0) - (a.at || 0));
+const pendingReqs = () => reqList().filter((q) => q.status === "pending");
+const pendingFor = (vid, cid) => pendingReqs().some((q) => q.target === vid + "/" + cid);
+const canApprove = (q) => isAdmin() && q.status === "pending" && !(q.approvals || []).some((a) => a.sid === state.me.id);
+const tsLabel = (t) => { const d = new Date(t || 0); return d.getDate() + "/" + pad(d.getMonth() + 1) + "/" + d.getFullYear() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()); };
+async function getDoc(path) { if (db) { const s = await db.doc(path).get(); return s.exists ? s.data() : null; } return local.data[path] || null; }
+async function applyOps(ops) { for (const o of ops || []) { if (o.op === "merge") await mergeDoc(o.path, o.data, o.init); else if (o.op === "set") await setDoc(o.path, o.data); else if (o.op === "delete") await delDoc(o.path); } }
+function custDiff(prev, data, oldV, newV) {
+  const L = [], tn = (id) => (typeOf(id) || {}).name || id || "", vn = (id) => (state.villages[id] || {}).name || "";
+  const f = (lab, a, b) => { if (String(a ?? "") !== String(b ?? "")) L.push([lab, String(a ?? ""), String(b ?? "")]); };
+  if (oldV !== newV) f("ບ້ານ", vn(oldV), vn(newV));
+  f("ລະຫັດ", prev.c, data.c); f("ຊື່", prev.n, data.n); f("ເບີໂທ", prev.p, data.p); f("ທີ່ຢູ່", prev.a, data.a); f("ປະເພດ", tn(prev.t), tn(data.t));
+  f("ຄ່າບໍລິການ/ເດືອນ", fmt(feeOf(prev)) + " ກີບ", fmt(feeOf(data)) + " ກີບ"); f("ເລີ່ມໃຊ້ບໍລິການ", mLabel(prev.s), mLabel(data.s));
+  f("ສະຖານະ", prev.x ? "ຢຸດບໍລິການ" : "ໃຊ້ບໍລິການຢູ່", data.x ? "ຢຸດບໍລິການ" : "ໃຊ້ບໍລິການຢູ່"); f("ໝາຍເຫດ", prev.note, data.note);
+  return L;
+}
+async function requestChange(kind, title, lines, ops, target) {
+  if (!state.me) return false;
+  if (target && pendingReqs().some((q) => q.target === target)) { toast("ມີຄຳຂໍແກ້ໄຂລາຍການນີ້ ລໍຖ້າອະນຸມັດຢູ່ແລ້ວ"); return false; }
+  const approvals = isAdmin() ? [{ sid: state.me.id, name: state.me.name, at: Date.now() }] : [];
+  try {
+    await setDoc("requests/" + randId("q"), { kind, title, lines, ops, target: target || "", by: state.me.name, sid: state.me.id, at: Date.now(), status: "pending", approvals });
+    toast("ສົ່ງຄຳຂໍແລ້ວ · ລໍຖ້າຜູ້ບໍລິຫານອະນຸມັດ (" + approvals.length + "/" + NEED_APPROVALS + ")");
+    return true;
+  } catch (e) { toast("ສົ່ງຄຳຂໍບໍ່ສຳເລັດ. ລອງໃໝ່."); return false; }
+}
+async function logChange(kind, title, lines, ops, target) {
+  if (!state.me) return false;
+  try {
+    await applyOps(ops);
+    await setDoc("requests/" + randId("q"), { kind, title, lines, ops: [], target: target || "", by: state.me.name, sid: state.me.id, at: Date.now(), status: "logged", approvals: [], doneAt: Date.now() });
+    toast("ບັນທຶກແລ້ວ");
+    return true;
+  } catch (e) { toast("ບັນທຶກບໍ່ສຳເລັດ. ລອງໃໝ່."); return false; }
+}
+let apBusy = false;
+async function approveReq(id) {
+  if (apBusy || !isAdmin()) return; apBusy = true;
+  try {
+    const q = await getDoc("requests/" + id);
+    if (!q || q.status !== "pending") { toast("ຄຳຂໍນີ້ຖືກດຳເນີນການແລ້ວ"); return; }
+    const approvals = (q.approvals || []).slice();
+    if (approvals.some((a) => a.sid === state.me.id)) { toast("ທ່ານອະນຸມັດຄຳຂໍນີ້ແລ້ວ"); return; }
+    approvals.push({ sid: state.me.id, name: state.me.name, at: Date.now() });
+    if (approvals.length >= NEED_APPROVALS) {
+      await mergeDoc("requests/" + id, { approvals, status: "applying" });
+      await applyOps(q.ops);
+      await mergeDoc("requests/" + id, { status: "approved", doneAt: Date.now() });
+      toast("ອະນຸມັດຄົບ " + NEED_APPROVALS + " ບັນຊີ · ແກ້ໄຂຂໍ້ມູນແລ້ວ");
+    } else { await mergeDoc("requests/" + id, { approvals }); toast("ອະນຸມັດແລ້ວ (" + approvals.length + "/" + NEED_APPROVALS + ")"); }
+  } catch (e) { toast("ອະນຸມັດບໍ່ສຳເລັດ. ລອງໃໝ່."); }
+  finally { apBusy = false; }
+}
+async function rejectReq(id) {
+  if (!isAdmin()) return;
+  try { await mergeDoc("requests/" + id, { status: "rejected", doneAt: Date.now(), doneBy: state.me.name }); toast("ປະຕິເສດຄຳຂໍແລ້ວ"); } catch (e) { toast("ບໍ່ສຳເລັດ. ລອງໃໝ່."); }
+}
+async function cancelReq(id) {
+  const q = state.requests[id]; if (!q || q.sid !== state.me.id || q.status !== "pending") return;
+  try { await mergeDoc("requests/" + id, { status: "cancelled", doneAt: Date.now(), doneBy: state.me.name }); toast("ຍົກເລີກຄຳຂໍແລ້ວ"); } catch (e) { toast("ບໍ່ສຳເລັດ. ລອງໃໝ່."); }
+}
+function renderApprove() {
+  const admins = (state.staff || []).filter((u) => u.role === "admin").length;
+  const pend = pendingReqs(), hist = reqList().filter((q) => q.status !== "pending").slice(0, 60);
+  const ST = { logged: ["ex", "ບັນທຶກໄວ້"], approved: ["paid", "ອະນຸມັດແລ້ວ"], rejected: ["owe", "ຖືກປະຕິເສດ"], cancelled: ["off", "ຍົກເລີກ"], applying: ["ex", "ກຳລັງບັນທຶກ"] };
+  const card = (q) => {
+    const ap = q.approvals || [], dots = Array.from({ length: NEED_APPROVALS }, (_, i) => '<i class="' + (ap[i] ? "on" : "") + '">' + (ap[i] ? "✓" : i + 1) + "</i>").join("");
+    const lines = (q.lines || []).map((l) => "<tr><td class=\"small\" style=\"white-space:nowrap\">" + esc(l[0]) + "</td><td>" + (l[1] ? "<del>" + esc(l[1]) + "</del>" : "") + "</td><td>" + (l[2] ? "<ins>" + esc(l[2]) + "</ins>" : "") + "</td></tr>").join("");
+    const mine = q.sid === state.me.id;
+    const acts = (canApprove(q) ? '<button class="btn sm warn" type="button" data-act="apNo" data-q="' + esc(q.id) + '">ປະຕິເສດ</button><button class="btn sm primary" type="button" data-act="apOk" data-q="' + esc(q.id) + '">ອະນຸມັດ</button>' : "") +
+      (mine ? '<button class="btn sm" type="button" data-act="apCancel" data-q="' + esc(q.id) + '">ຍົກເລີກຄຳຂໍ</button>' : "") + (isAdmin() && !canApprove(q) && !mine ? '<span class="small">ທ່ານອະນຸມັດແລ້ວ</span>' : "") + (isAdmin() && !canApprove(q) && mine ? "" : "");
+    return '<div class="req"><div class="rh2"><strong>' + esc(q.title) + '</strong><span class="small">ຂໍໂດຍ ' + esc(q.by) + " · " + tsLabel(q.at) + "</span></div>" +
+      '<div class="tablebox"><table><thead><tr><th>ລາຍການ</th><th>ເດີມ</th><th>ໃໝ່</th></tr></thead><tbody>' + lines + "</tbody></table></div>" +
+      '<div class="ra"><div class="steps">' + dots + '<span class="small">' + (ap.length ? "ອະນຸມັດໂດຍ " + ap.map((a) => esc(a.name)).join(", ") : "ຍັງບໍ່ມີຜູ້ອະນຸມັດ") + '</span></div><div class="rowact">' + acts + "</div></div></div>";
+  };
+  $("content").innerHTML =
+    (admins < NEED_APPROVALS ? '<p class="notice">ຕອນນີ້ມີຜູ້ບໍລິຫານ ' + admins + " ບັນຊີ. ຕ້ອງມີຢ່າງໜ້ອຍ " + NEED_APPROVALS + " ບັນຊີ ຈຶ່ງອະນຸມັດການແກ້ໄຂໄດ້. " + (isAdmin() ? "ເພີ່ມໄດ້ທີ່ ຕັ້ງຄ່າ → ບັນຊີພະນັກງານ." : "") + "</p>" : "") +
+    '<h2 style="font-size:17px;margin:4px 0 0">ລໍຖ້າອະນຸມັດ · ' + pend.length + "</h2>" +
+    (pend.length ? pend.map(card).join("") : '<div class="panel"><div class="empty">ບໍ່ມີຄຳຂໍທີ່ລໍຖ້າອະນຸມັດ.</div></div>') +
+    '<div class="panel"><h2>ປະຫວັດການແກ້ໄຂ</h2>' + (hist.length ? '<div class="tablebox"><table style="min-width:720px"><thead><tr><th>ວັນທີຂໍ</th><th>ລາຍການ</th><th>ຜູ້ດຳເນີນການ</th><th>ຜູ້ອະນຸມັດ</th><th>ຜົນ</th></tr></thead><tbody>' +
+      hist.map((q) => { const st = ST[q.status] || ["ex", q.status]; return '<tr><td class="num">' + tsLabel(q.at) + "</td><td>" + esc(q.title) + "</td><td>" + esc(q.by) + "</td><td>" + esc((q.approvals || []).map((a) => a.name).join(", ")) + (q.doneBy ? '<div class="small">' + esc(q.doneBy) + "</div>" : "") + '</td><td><span class="chip ' + st[0] + '">' + st[1] + "</span></td></tr>"; }).join("") + "</tbody></table></div>" : '<div class="empty">ຍັງບໍ່ມີປະຫວັດ.</div>') + "</div>";
+}
+
+/* ---------- csv ---------- */
+async function saveCsv(name, rows) {
+  const csv = "﻿" + rows.map((l) => l.map((v) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }).join(",")).join("\r\n");
+  try { const dl = window.claude && (await window.claude.use("downloads")); if (!dl) throw new Error("x"); await dl.save({ filename: name, data: csv }); toast("ໄຟລ໌ພ້ອມແລ້ວ"); }
+  catch (e) { toast("ບັນທຶກໄຟລ໌ບໍ່ສຳເລັດ"); }
+}
+
+/* ---------- events ---------- */
+document.addEventListener("input", (e) => {
+  const id = e.target.id;
+  if (id === "t-q" || id === "t-cq") { state.q = e.target.value; renderAll(); }
+});
+document.addEventListener("change", (e) => {
+  const id = e.target.id, v = e.target.value;
+  if (id === "t-month" && v) { state.month = v; renderAll(); }
+  if (id === "t-village") { state.village = v; renderAll(); }
+  if (id === "t-cvillage") { state.custVillage = v; renderAll(); }
+  if (id === "t-rmonth" && v) { state.rMonth = v; renderAll(); }
+});
+document.addEventListener("click", async (e) => {
+  const cl = e.target.closest("[data-close]"); if (cl) { closeDlg(cl.dataset.close); return; }
+  const tb = e.target.closest("[data-tab],[data-tabgo]");
+  if (tb) { state.tab = tb.dataset.tab || tb.dataset.tabgo; state.q = ""; state.confirm = null; renderAll(); return; }
+  const fb = e.target.closest("[data-filter]"); if (fb) { state.filter = fb.dataset.filter; renderAll(); return; }
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act, vid = b.dataset.vid, cid = b.dataset.cid;
+  if (act === "pay") selectCust(vid, cid, state.month);
+  if (act === "rowAdd") { const c = findCust(state.pCust.vid, state.pCust.cid); const chosen = state.pRows.map((r) => r.m); const m = c && openMonths(c, state.pYear).find((x) => !chosen.includes(x)); if (m) { state.pRows.push({ m, d: todayIso(), a: feeOf(c), note: "" }); state.pRows.sort((x, z) => x.m.localeCompare(z.m)); state.pErr = ""; renderAll(); } }
+  if (act === "rowDel") { state.pRows.splice(+b.dataset.i, 1); renderAll(); }
+  if (act === "payClear") { state.pCust = null; state.pRows = []; state.pSlip = null; state.pErr = ""; renderAll(); }
+  if (act === "paySave") paySave();
+  if (act === "receipt") showReceipt(vid, cid, b.dataset.r);
+  if (act === "dlReceipt") downloadReceipt();
+  if (act === "voidAsk") { b.dataset.act = "voidDo"; b.textContent = "ຢືນຢັນຂໍຍົກເລີກ?"; }
+  if (act === "payEdit") payEditForm();
+  if (act === "payEditBack" && state.receipt) showReceipt(state.receipt.vid, state.receipt.cid, state.receipt.r, state.receipt.items);
+  if (act === "payEditSend") payEditSend();
+  if (act === "voidDo") voidReceipt();
+  if (act === "newCust") { if (!villageList().length) { toast("ເພີ່ມບ້ານກ່ອນ"); return; } openCust(null, null); }
+  if (act === "editCust") openCust(vid, cid);
+  if (act === "invOne") invOpenOne(vid, cid);
+  if (act === "invBulk") invOpenBulk();
+  if (act === "invPdf") invDownload("pdf");
+  if (act === "invPng") invDownload("png");
+  if (act === "invBulkGo") invBulkGo(false);
+  if (act === "invBulkPrint") invBulkGo(true);
+  if (act === "invPrint") invDownload("print");
+  if (act === "impOpen" && isAdmin()) impOpen();
+  if (act === "impPick") $("impFile").click();
+  if (act === "impTemplate") saveCsv("customer-template.csv", [["ລຳດັບ", "ເລກທີ", "ຊື່ ແລະ ນາມສະກຸນ / ບໍລິສັດ / ຫ້ອງການ", "ເບີໂທລະສັບ", "ໜ່ວຍ", "ເສັ້ນທາງ", "ຈນ.ຄົນໃນ ຄຄ", "ປະເພດ (ຄົວເຮືອນ/ທຸລະກິດ/ຫ້ອງແຖວ/ສຳນັກງານ)", "ຂີ້ເຫຍື້ອ (ຖົງ/ອາທິດ)", "ພັນທະ ຄ່າຂີ້ເຫຍື້ອ", "ໝາຍເຫດ"], [1, "", "ທ້າວ ຕົວຢ່າງ ໃສ່ຊື່ແທ້", "020 0000 0000", 1, "ຮ່ອມ", 4, "ຄົວເຮືອນ", "1 ຖົງ/ທິດ", 33000, "ລຶບແຖວນີ້ອອກກ່ອນນຳເຂົ້າ"]]);
+  if (act === "staff" && isAdmin()) openStaff();
+  if (act === "csvPaid") {
+    const m = state.rMonth, rows = [["ເດືອນ", "ເລກໃບຮັບເງິນ", "ວັນທີຈ່າຍ", "ລະຫັດ", "ລູກຄ້າ", "ເບີໂທ", "ບ້ານ", "ປະເພດ", "ຈຳນວນເງິນ (ກີບ)", "ວິທີຊຳລະ", "ຜູ້ຮັບເງິນ", "ໝາຍເຫດ"]];
+    customers().forEach((c) => { const p = paidRec(m, c.vid, c.id); if (p) rows.push([m, p.r, p.d, c.c, c.n, c.p, c.vname, (typeOf(c.t) || {}).name, p.a, METHODS[p.m] || p.m, p.by, p.note]); });
+    saveCsv("waste-fee-paid-" + m + ".csv", rows);
+  }
+  if (act === "csvOwe") {
+    const m = state.rMonth, rows = [["ລະຫັດ", "ລູກຄ້າ", "ເບີໂທ", "ບ້ານ", "ທີ່ຢູ່", "ປະເພດ", "ຄ່າບໍລິການ/ເດືອນ", "ເດືອນທີ່ຄ້າງ", "ຈຳນວນເດືອນ", "ລວມຄ້າງ (ກີບ)"]];
+    customers().forEach((c) => { const o = unpaidMonths(c, m); if (o.length) rows.push([c.c, c.n, c.p, c.vname, c.a, (typeOf(c.t) || {}).name, feeOf(c), o.map(mLabel).join(" / "), o.length, o.length * feeOf(c)]); });
+    saveCsv("waste-fee-unpaid-" + m + ".csv", rows);
+  }
+  if (act === "apCancel") { cancelReq(b.dataset.q); return; }
+  if (!isAdmin()) return;
+  if (act === "saveCo") {
+    const co = cfg(), nv = { company: $("co-name").value.trim(), phone: $("co-phone").value.trim(), payInfo: $("co-payinfo").value.trim() };
+    const lines = [["ຊື່ບໍລິສັດ", co.company, nv.company], ["ເບີໂທ / ທີ່ຢູ່", co.phone, nv.phone], ["ຊ່ອງທາງຊຳລະ", co.payInfo || "", nv.payInfo]].filter((l) => String(l[1] || "") !== String(l[2] || ""));
+    if (!lines.length) { toast("ບໍ່ມີການປ່ຽນແປງ"); return; }
+    if (!state.config) { await mergeDoc("settings/config", nv, { types: DEF_TYPES }); toast("ບັນທຶກແລ້ວ"); return; }
+    await logChange("company", "ແກ້ໄຂຂໍ້ມູນບໍລິສັດ", lines, [{ op: "merge", path: "settings/config", data: nv, init: { types: DEF_TYPES } }], "");
+  }
+  if (act === "addType") { await mergeDoc("settings/config", { types: cfg().types.concat([{ id: randId("t"), name: "ປະເພດໃໝ່", fee: 0 }]) }, {}); }
+  if (act === "saveTypes") {
+    const old = cfg().types, types = old.map((t, i) => ({ id: t.id, name: ($("ty-n-" + i) || {}).value?.trim() || t.name, fee: digits(($("ty-f-" + i) || {}).value) || 0 }));
+    const lines = []; types.forEach((t, i) => { const o = old[i]; if (o.name !== t.name) lines.push(["ຊື່ປະເພດ", o.name, t.name]); if (Number(o.fee) !== t.fee) lines.push(["ລາຄາ " + t.name, fmt(o.fee) + " ກີບ", fmt(t.fee) + " ກີບ"]); });
+    if (!lines.length) { toast("ບໍ່ມີການປ່ຽນແປງ"); return; }
+    await logChange("types", "ແກ້ໄຂປະເພດ ແລະ ລາຄາ", lines, [{ op: "merge", path: "settings/config", data: { types }, init: {} }], "");
+  }
+  if (act === "addV") {
+    const name = $("nv-name").value.trim(); if (!name) { toast("ໃສ່ຊື່ບ້ານ"); return; }
+    await setDoc("villages/" + randId("v"), { name, order: villageList().length + 1, customers: {} }); toast("ເພີ່ມບ້ານແລ້ວ");
+  }
+  if (act === "renameV") { const n = $("vn-" + vid).value.trim(), o = (state.villages[vid] || {}).name; if (n && n !== o) await logChange("renameV", "ປ່ຽນຊື່ບ້ານ " + o, [["ຊື່ບ້ານ", o, n]], [{ op: "merge", path: "villages/" + vid, data: { name: n } }], ""); }
+  if (act === "askDelV") { state.confirm = "v:" + vid; renderAll(); }
+  if (act === "delV") { state.confirm = null; const v = state.villages[vid] || {}, n = Object.values(v.customers || {}).filter(Boolean).length; await logChange("delV", "ລຶບບ້ານ " + v.name, [["ບ້ານ", v.name, "ລຶບອອກ"], ["ລູກຄ້າໃນບ້ານນີ້", n + " ລາຍ", "ລຶບນຳ"]], [{ op: "delete", path: "villages/" + vid }], ""); renderAll(); }
+  if (act === "apOk") approveReq(b.dataset.q);
+  if (act === "apNo") rejectReq(b.dataset.q);
+});
+
+/* ---------- staff accounts & sign-in ---------- */
+const AUTO_LOCK = 30 * 60 * 1000, enc = new TextEncoder();
+async function hashPin(pin, salt) {
+  const data = enc.encode("wf:" + salt + ":" + pin);
+  if (window.crypto && crypto.subtle) { const b = await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, "0")).join(""); }
+  let h = 2166136261; for (const x of data) { h ^= x; h = Math.imul(h, 16777619) >>> 0; } return "f" + h.toString(16);
+}
+const pinOk = (p) => /^\d{4,6}$/.test(p);
+const authMode = () => state.staff === null ? (state.staffErr ? "error" : "loading") : !state.staff.length ? "setup" : (state.loginMode === "reset" && state.isOwner ? "reset" : "login");
+async function saveStaff(list) { await setDoc("settings/staff", { list }); state.staff = list; syncSession(); renderAll(); }
+function syncSession() {
+  if (state.me) { const u = (state.staff || []).find((x) => x.id === state.me.id); if (!u) { signOut(); return; } state.me = { id: u.id, name: u.name, role: u.role }; return; }
+  let s = null; try { s = JSON.parse(store.get("wf-session") || "null"); } catch (e) {}
+  if (s && Date.now() - (s.at || 0) < AUTO_LOCK) { const u = (state.staff || []).find((x) => x.id === s.id); if (u) state.me = { id: u.id, name: u.name, role: u.role }; }
+}
+function signIn(u) { state.me = { id: u.id, name: u.name, role: u.role }; state.fails = 0; state.loginMode = "login"; store.set("wf-session", JSON.stringify({ id: u.id, at: Date.now() })); store.set("wf-last", u.id); tbSig = ""; renderAll(); }
+function signOut() { state.me = null; state.pCust = null; state.pRows = []; store.set("wf-session", ""); ["payDlg", "custDlg", "staffDlg"].forEach(closeDlg); renderAll(); }
+let lastTouch = Date.now();
+["click", "keydown", "touchstart"].forEach((ev) => document.addEventListener(ev, () => { if (!state.me) return; const now = Date.now(); if (now - lastTouch > 60000) store.set("wf-session", JSON.stringify({ id: state.me.id, at: now })); lastTouch = now; }, { passive: true }));
+setInterval(() => { if (state.me && Date.now() - lastTouch > AUTO_LOCK) signOut(); }, 30000);
+$("logout").onclick = signOut;
+function renderAuth() {
+  $("login").hidden = false; $("appHeader").hidden = true; $("appMain").hidden = true;
+  $("loginCompany").textContent = companyName();
+  const mode = authMode(); $("loginErr").hidden = true;
+  const field = (id, label, input) => '<div class="field"><label for="' + id + '">' + label + "</label>" + input + "</div>";
+  const pinIn = (id) => '<input id="' + id + '" class="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="off">';
+  const sel = () => '<select id="l-staff">' + state.staff.map((u) => '<option value="' + esc(u.id) + '">' + esc(u.name) + "</option>").join("") + "</select>";
+  let title = "ເຂົ້າສູ່ລະບົບ", help = "", body = "", btn = "ເຂົ້າສູ່ລະບົບ", extra = "";
+  if (mode === "loading") help = "ກຳລັງໂຫຼດ…";
+  else if (mode === "error") help = "ໂຫຼດລາຍຊື່ພະນັກງານບໍ່ໄດ້. ກວດອິນເຕີເນັດ ແລ້ວໂຫຼດໜ້າໃໝ່.";
+  else if (mode === "setup") { title = "ສ້າງບັນຊີຜູ້ບໍລິຫານ"; help = "ເປີດໃຊ້ຄັ້ງທຳອິດ. ຜູ້ບໍລິຫານຕັ້ງຄ່າລາຄາ, ເພີ່ມບ້ານ ແລະ ເພີ່ມພະນັກງານເກັບເງິນ."; btn = "ສ້າງບັນຊີ";
+    body = field("l-name", "ຊື່ຂອງທ່ານ", '<input id="l-name" autocomplete="off">') + field("l-pin", "PIN (4–6 ຕົວເລກ)", pinIn("l-pin")) + field("l-pin2", "ໃສ່ PIN ອີກຄັ້ງ", pinIn("l-pin2")); }
+  else if (mode === "reset") { title = "ຕັ້ງ PIN ໃໝ່"; help = "ສະເພາະເຈົ້າຂອງໂປຣແກຣມນີ້ເທົ່ານັ້ນ."; btn = "ບັນທຶກ PIN ໃໝ່";
+    body = field("l-staff", "ຊື່", sel()) + field("l-pin", "PIN ໃໝ່", pinIn("l-pin")) + field("l-pin2", "ໃສ່ PIN ອີກຄັ້ງ", pinIn("l-pin2"));
+    extra = '<button type="button" class="linkbtn" data-auth="login">ກັບໄປໜ້າເຂົ້າສູ່ລະບົບ</button>'; }
+  else { help = "ເລືອກຊື່ຂອງທ່ານ ແລ້ວໃສ່ລະຫັດ PIN."; body = field("l-staff", "ທ່ານແມ່ນໃຜ?", sel()) + field("l-pin", "PIN", pinIn("l-pin"));
+    if (state.isOwner) extra = '<button type="button" class="linkbtn" data-auth="reset">ລືມ PIN? ຕັ້ງໃໝ່</button>'; }
+  $("loginTitle").textContent = title; $("loginHelp").textContent = help; $("loginBody").innerHTML = body; $("loginExtra").innerHTML = extra;
+  $("loginBtn").textContent = btn; $("loginBtn").hidden = mode === "loading" || mode === "error";
+  const last = store.get("wf-last"); if ($("l-staff") && last && state.staff.some((u) => u.id === last)) $("l-staff").value = last;
+  setTimeout(() => { const f = $("l-name") || $("l-pin"); if (f) f.focus(); }, 30);
+}
+$("loginExtra").addEventListener("click", (e) => { const a = e.target.closest("[data-auth]"); if (a) { state.loginMode = a.dataset.auth; renderAuth(); } });
+$("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fail = (m) => { $("loginErr").textContent = m; $("loginErr").hidden = false; };
+  const mode = authMode(), pin = ($("l-pin") || {}).value || "", pin2 = ($("l-pin2") || {}).value;
+  try {
+    if (mode === "setup") {
+      const name = $("l-name").value.trim();
+      if (!name) return fail("ກະລຸນາໃສ່ຊື່."); if (!pinOk(pin)) return fail("PIN ຕ້ອງເປັນຕົວເລກ 4 ຫາ 6 ໂຕ."); if (pin !== pin2) return fail("PIN ທັງສອງບໍ່ຄືກັນ.");
+      const salt = randId("k"), u = { id: randId("u"), name, role: "admin", salt, hash: await hashPin(pin, salt) };
+      await saveStaff([u]); signIn(u);
+    } else if (mode === "reset") {
+      if (!pinOk(pin)) return fail("PIN ຕ້ອງເປັນຕົວເລກ 4 ຫາ 6 ໂຕ."); if (pin !== pin2) return fail("PIN ທັງສອງບໍ່ຄືກັນ.");
+      const id = $("l-staff").value, salt = randId("k"), hash = await hashPin(pin, salt);
+      await saveStaff(state.staff.map((u) => u.id === id ? { ...u, salt, hash } : u)); state.loginMode = "login"; renderAuth(); toast("ບັນທຶກ PIN ແລ້ວ");
+    } else if (mode === "login") {
+      if (Date.now() < state.lockUntil) return fail("ໃສ່ຜິດຫຼາຍເທື່ອ. ລໍຖ້າ 30 ວິນາທີ.");
+      const u = state.staff.find((x) => x.id === $("l-staff").value);
+      if (!u || !pinOk(pin) || (await hashPin(pin, u.salt)) !== u.hash) {
+        state.fails++; $("l-pin").value = "";
+        if (state.fails >= 5) { state.fails = 0; state.lockUntil = Date.now() + 30000; return fail("ໃສ່ຜິດຫຼາຍເທື່ອ. ລໍຖ້າ 30 ວິນາທີ."); }
+        return fail("PIN ບໍ່ຖືກຕ້ອງ. ລອງໃໝ່.");
+      }
+      signIn(u);
+    }
+  } catch (ex) { fail("ເກີດຂໍ້ຜິດພາດ. ລອງໃໝ່."); }
+});
+function renderStaff() {
+  $("staffList").innerHTML = '<table style="min-width:480px"><thead><tr><th>ຊື່</th><th>ໜ້າທີ່</th><th></th></tr></thead><tbody>' + (state.staff || []).map((u) => {
+    const mine = u.id === state.me.id; let act;
+    if (state.pinFor === u.id) act = '<input id="np" class="pin" type="password" inputmode="numeric" maxlength="6" aria-label="PIN ໃໝ່" style="width:120px;min-height:36px"><button class="btn sm" type="button" data-staff="savepin" data-id="' + esc(u.id) + '">ບັນທຶກ</button>';
+    else act = '<button class="btn sm" type="button" data-staff="pin" data-id="' + esc(u.id) + '">PIN ໃໝ່</button>' + (mine ? "" : '<button class="btn sm warn" type="button" data-staff="' + (state.rmFor === u.id ? "rm" : "askrm") + '" data-id="' + esc(u.id) + '">' + (state.rmFor === u.id ? "ລຶບແທ້ບໍ?" : "ລຶບອອກ") + "</button>");
+    return "<tr><td><strong>" + esc(u.name) + "</strong>" + (mine ? ' <span class="small">(ທ່ານ)</span>' : "") + "</td><td>" + (u.role === "admin" ? "ຜູ້ບໍລິຫານ" : "ພະນັກງານເກັບເງິນ") + '</td><td><div class="rowact">' + act + "</div></td></tr>";
+  }).join("") + "</tbody></table>";
+}
+function openStaff() { state.pinFor = state.rmFor = null; $("s-err").hidden = true; $("s-name").value = ""; $("s-pin").value = ""; renderStaff(); openDlg("staffDlg"); }
+$("staffForm").addEventListener("submit", async (e) => {
+  e.preventDefault(); if (!isAdmin()) return;
+  const fail = (m) => { $("s-err").textContent = m; $("s-err").hidden = false; };
+  const name = $("s-name").value.trim(), pin = $("s-pin").value, role = $("s-role").value === "admin" ? "admin" : "staff";
+  if (!name) return fail("ກະລຸນາໃສ່ຊື່."); if (state.staff.some((u) => u.name.toLowerCase() === name.toLowerCase())) return fail("ມີຊື່ນີ້ແລ້ວ."); if (!pinOk(pin)) return fail("PIN ຕ້ອງເປັນຕົວເລກ 4 ຫາ 6 ໂຕ.");
+  const salt = randId("k");
+  await saveStaff(state.staff.concat([{ id: randId("u"), name, role, salt, hash: await hashPin(pin, salt) }]));
+  $("s-name").value = ""; $("s-pin").value = ""; $("s-err").hidden = true; renderStaff(); toast("ເພີ່ມພະນັກງານແລ້ວ");
+});
+$("staffList").addEventListener("click", async (e) => {
+  const b = e.target.closest("[data-staff]"); if (!b || !isAdmin()) return;
+  const id = b.dataset.id, act = b.dataset.staff; $("s-err").hidden = true;
+  if (act === "pin") { state.pinFor = id; state.rmFor = null; renderStaff(); setTimeout(() => $("np") && $("np").focus(), 20); }
+  if (act === "savepin") { const pin = $("np").value; if (!pinOk(pin)) { $("s-err").textContent = "PIN ຕ້ອງເປັນຕົວເລກ 4 ຫາ 6 ໂຕ."; $("s-err").hidden = false; return; }
+    const salt = randId("k"), hash = await hashPin(pin, salt); await saveStaff(state.staff.map((u) => u.id === id ? { ...u, salt, hash } : u)); state.pinFor = null; renderStaff(); toast("ບັນທຶກ PIN ແລ້ວ"); }
+  if (act === "askrm") { state.rmFor = id; state.pinFor = null; renderStaff(); }
+  if (act === "rm") { const rest = state.staff.filter((u) => u.id !== id); if (!rest.some((u) => u.role === "admin")) { $("s-err").textContent = "ຕ້ອງມີຜູ້ບໍລິຫານຢ່າງໜ້ອຍ 1 ຄົນ."; $("s-err").hidden = false; return; } await saveStaff(rest); state.rmFor = null; renderStaff(); toast("ລຶບແລ້ວ"); }
+});
+
+/* ---------- start ---------- */
+renderAuth();
+(async () => {
+  try { db = window.claude ? await window.claude.use("db") : null; } catch (e) { db = null; }
+  try { const u = window.claude ? await window.claude.use("user") : null; state.isOwner = u ? await u.isOwner() : false; } catch (e) {}
+  watchAll(); renderAll();
+})();
+})();
+</script>
+
+</body></html>
